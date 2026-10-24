@@ -287,13 +287,13 @@
 
     <header class="intro">
       <h1>Video çalışma panom.</h1>
-      <p>İzlediklerini işaretle, ilerlemeni gör, kaldığın yerden devam et.</p>
+      <p>iyi gidiyon aşk</p>
     </header>
 
     <section class="dashboard" aria-label="Video çalışma takip paneli">
       <div class="dashboard-top">
         <div>
-          <div class="overview-title">Genel ilerleme <span aria-hidden="true">✦</span></div>
+          <div class="overview-title"> Genel <span aria-hidden="true"> Durum </span></div>
           <div class="overview-caption" id="overallDescription" aria-live="polite">Önce video sayılarını ekle</div>
         </div>
         <div class="overview-right">
@@ -302,7 +302,7 @@
         </div>
       </div>
       <div class="subjects-heading">
-        <h2>Oynatma listelerim</h2>
+        <h2>Dersler</h2>
         <span id="subjectTotal">3 ders <span aria-hidden="true">✳</span></span>
       </div>
 
@@ -315,7 +315,7 @@
         <span class="footer-brand">Sekolata</span>
         <span class="connection-dot" id="connectionDot" aria-hidden="true"></span>
         <span id="connectionStatus" class="connection-status" role="status" aria-live="polite">Yükleniyor...</span>
-        <button class="auth-link" id="authButton" type="button" hidden>Yönetici girişi</button>
+        <button class="auth-link" id="authButton" type="button" hidden>dümenden giriş</button>
       </div>
     </section>
   </main>
@@ -338,7 +338,7 @@
   </dialog>
   <dialog class="edit-dialog auth-dialog" id="authDialog" aria-labelledby="authTitle">
     <form id="authForm" novalidate>
-      <div class="dialog-header"><div><div class="dialog-kicker">Sekolata</div><h2 id="authTitle">Yönetici girişi</h2></div><button type="button" class="close-dialog" data-close="authDialog" aria-label="Pencereyi kapat">×</button></div>
+      <div class="dialog-header"><div><div class="dialog-kicker">Sekolata</div><h2 id="authTitle">Sekolata giriş</h2></div><button type="button" class="close-dialog" data-close="authDialog" aria-label="Pencereyi kapat">×</button></div>
       <label class="field"><span>E-posta</span><input id="emailInput" type="email" autocomplete="username" required placeholder="E-posta adresin"></label>
       <label class="field"><span>Şifre</span><input id="passwordInput" type="password" autocomplete="current-password" required placeholder="Şifren"></label>
       <p class="form-error" id="authError" role="alert" hidden></p>
@@ -421,7 +421,7 @@
       function updateStatus() {
         const button = qs('authButton');
         button.hidden = mode !== 'shared';
-        button.textContent = session?.user ? 'Çıkış yap' : 'Yönetici girişi';
+        button.textContent = session?.user ? 'dümenden çıkış' : 'dümenden giriş';
         if (mode === 'demo') message('Önizleme modu · Kayıtlar yalnızca bu tarayıcıda');
         else if (mode === 'broken') message('Ortak kayıt kütüphanesi yüklenemedi.', true);
         else if (connectionError) message(connectionError, true);
@@ -451,7 +451,7 @@
             </div>
           </div>`;
         el.querySelector('[data-title]').textContent = item.title;
-        el.querySelector('[data-subtitle]').textContent = index < 3 && ['Akademi Giriş Sınavı','Geçmişi keşfet','Dünyayı tanı'][index] || 'Video çalışma listesi';
+        el.querySelector('[data-subtitle]').textContent = index < 3 && [' ',' ',' '][index] || 'Video çalışma listesi';
         const left = item.total-item.done;
         const percent = item.total ? Math.round(item.done / item.total * 100) : 0;
         el.querySelector('[data-count]').textContent = `${item.done} / ${item.total}`;
