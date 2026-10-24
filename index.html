@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5ee">
+  <meta name="description" content="Video çalışma panom — AGS ve diğer dersler için ortak video ilerleme takibi.">
+  <title>Video çalışma panom · Sekolata</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #334044;
+      --muted: #7e898d;
+      --canvas: #f5f5ee;
+      --white: #fffefa;
+      --border: #e9ebe4;
+      --shadow: 0 24px 75px rgba(77, 91, 86, .095);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 48px 18px 34px;
+      font: 500 15px/1.55 "DM Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 9% 13%, rgba(215, 230, 218, .75), transparent 32%),
+        radial-gradient(circle at 89% 78%, rgba(243, 220, 219, .64), transparent 31%),
+        radial-gradient(circle at 82% 7%, rgba(237, 231, 204, .55), transparent 27%),
+        var(--canvas);
+      position: relative;
+      isolation: isolate;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      background-image: radial-gradient(#b1bcb2 0.8px, transparent 0.8px);
+      background-size: 22px 22px;
+      opacity: .18;
+      pointer-events: none;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, a:focus-visible, input:focus-visible {
+      outline: 3px solid #819ee3;
+      outline-offset: 3px;
+    }
+    a { color: inherit; }
+    svg { display: block; flex-shrink: 0; }
+    .page { width: min(100%, 814px); position: relative; }
+    .deco { position: absolute; pointer-events: none; z-index: -1; }
+    .deco--star { width: 64px; top: 87px; left: -77px; transform: rotate(-13deg); }
+    .deco--pencil { width: 79px; top: 220px; right: -100px; transform: rotate(17deg); }
+    .deco--spark { width: 59px; bottom: 175px; left: -85px; transform: rotate(9deg); }
+    .intro { text-align: center; margin-bottom: 26px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fdf4da;
+      border: 1px solid #f0e2bc;
+      border-radius: 100px;
+      color: #9e854a;
+      padding: 7px 15px;
+      font: 800 10px/1.3 "Nunito", sans-serif;
+      letter-spacing: .18em;
+    }
+    .eyebrow svg { width: 15px; height: 15px; }
+    h1, h2, h3, p { margin: 0; }
+    .intro h1 {
+      margin: 17px 0 5px;
+      font: 900 clamp(30px, 4.5vw, 42px)/1.2 "Nunito", system-ui, sans-serif;
+      letter-spacing: -.04em;
+      color: #344343;
+    }
+    .intro h1 span { color: #8da6a0; }
+    .intro p { font-size: 14px; color: var(--muted); }
+    .dashboard {
+      background: rgba(255, 254, 250, .96);
+      border: 1px solid rgba(255,255,255,.92);
+      border-radius: 27px;
+      padding: 28px 31px 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .dashboard-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 23px;
+      border-bottom: 1px dashed #e6e9e2;
+    }
+    .overview-title { font: 800 15px/1.4 "Nunito",sans-serif; letter-spacing: -.01em; }
+    .overview-caption { font-size: 12px; color: #929c9b; margin-top: 2px; }
+    .overview-right { display: flex; align-items: center; gap: 13px; }
+    .overall-percent { font: 900 28px/1 "Nunito",sans-serif; letter-spacing: -.06em; color: #748f86; }
+    .overall-badge {
+      padding: 7px 12px;
+      background: #edf5ee;
+      color: #779387;
+      border-radius: 11px;
+      font: 800 11px/1.35 "Nunito",sans-serif;
+      white-space: nowrap;
+    }
+    .subjects-heading { display:flex; justify-content:space-between; align-items:center; margin: 24px 0 13px; }
+    .subjects-heading h2 { font: 900 15px/1.5 "Nunito",sans-serif; }
+    .subjects-heading span { font-size: 12px; color: #a2aba8; }
+    .subject {
+      --tint: #f0edfb;
+      --accent: #a69bd6;
+      --accent-dark: #8574b8;
+      background: #fff;
+      border: 1px solid #edece8;
+      border-radius: 18px;
+      padding: 18px 20px 15px;
+      margin-bottom: 12px;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+    }
+    .subject:hover { border-color: #dedfd9; box-shadow: 0 8px 20px rgba(44,70,60,.035); }
+    .subject--history { --tint: #fff0ec; --accent: #e9a79b; --accent-dark: #c77e74; }
+    .subject--geo { --tint: #e8f4ef; --accent: #91c4ae; --accent-dark: #649e86; }
+    .subject-head { display: flex; align-items: center; gap: 13px; }
+    .subject-icon {
+      width: 45px; height: 45px; display:grid; place-items:center;
+      background: var(--tint); border-radius: 13px;
+      color: var(--accent-dark);
+    }
+    .subject-icon svg { width: 23px; height:23px; }
+    .subject-labels { min-width: 0; flex: 1; }
+    .subject-labels h3 { font: 900 17px/1.2 "Nunito",sans-serif; letter-spacing: -.025em; }
+    .subject-labels p { font-size: 11.5px; color: #9da5a6; margin-top: 3px; }
+    .subject-count { text-align: right; flex-shrink: 0; }
+    .subject-count strong { display:block; font: 900 18px/1.2 "Nunito",sans-serif; letter-spacing: -.02em; font-variant-numeric:tabular-nums; }
+    .subject-count small { display:block; font-size: 11px; color: #95a09c; margin-top: 3px; }
+    .track {
+      height: 11px;
+      background: #f1f2ee;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 17px 0 12px;
+      position:relative;
+    }
+    .fill {
+      width: 0%; height:100%; background: var(--accent);
+      border-radius: inherit; transition: width .5s cubic-bezier(.2,.8,.2,1);
+    }
+    .subject-bottom { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .list-link { display: inline-flex; align-items:center; gap: 6px; text-decoration:none; font: 800 11.5px/1.5 "Nunito",sans-serif; color: var(--accent-dark); padding: 8px 0; }
+    .list-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .list-link svg { width: 14px; height:14px; }
+    .subject-actions { display:flex; align-items:center; gap:7px; }
+    .icon-button { display:grid;place-items:center; width:29px;height:29px;border:1px solid #e8ebe7;background:#fff;border-radius:9px;color:#8d9695; }
+    .icon-button:hover:not(:disabled) { color:var(--accent-dark);background:var(--tint);border-color:var(--tint); }
+    .icon-button svg { width: 15px; height: 15px; }
+    .add-button {
+      min-height: 30px; display:flex; gap:5px; align-items:center;
+      background: var(--tint); border: 1px solid transparent; border-radius: 9px;
+      padding: 7px 11px; color: var(--accent-dark);
+      font: 900 11.5px/1.2 "Nunito",sans-serif; white-space:nowrap;
+    }
+    .add-button:hover:not(:disabled) { filter: brightness(.965); }
+    .add-button svg { width:14px;height:14px; }
+    button:disabled { opacity:.45;cursor:not-allowed; }
+    .dashboard-footer {
+      padding-top: 7px; display: flex; align-items:center; justify-content:center; gap:7px;
+      text-align:center; color:#a1a9a5; font-size:11px;
+    }
+    .dashboard-footer svg { width:13px;height:13px; }
+    .site-footer { text-align:center;margin-top:20px; color:#a8afaa; font-size:11px; }
+    .site-footer span { color:#dcaaa3; }
+    .edit-dialog {
+      width: min(440px, calc(100vw - 32px));
+      max-height: calc(100dvh - 40px);
+      overflow:auto;
+      padding: 27px;
+      border: 1px solid #eeeae4;
+      border-radius: 22px;
+      box-shadow: 0 25px 90px rgba(44,61,63,.24);
+      color:var(--ink); background:#fffefa;
+    }
+    .edit-dialog::backdrop { background:rgba(40,54,52,.38);backdrop-filter:blur(4px); }
+    .dialog-header { display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:20px; }
+    .dialog-kicker { color:#91a29b;font:800 10px "Nunito",sans-serif;letter-spacing:.12em;text-transform:uppercase; }
+    .dialog-header h2 { font:900 23px/1.25 "Nunito",sans-serif;margin-top:4px;letter-spacing:-.03em; }
+    .close-dialog { width:30px;height:30px; border-radius:9px; border:none; background:#f1f3ee; display:grid;place-items:center;color:#7d8884; }
+    .close-dialog svg {width:18px;height:18px;}
+    .field { display:block;margin-top:17px; }
+    .field > span { display:block;margin-bottom:7px;font:800 12px "Nunito",sans-serif; }
+    .field input { width:100%;height:43px;padding:10px 13px;border:1px solid #dde3db;border-radius:11px;background:#fff;color:var(--ink);font:600 14px "DM Sans",sans-serif; }
+    .field input::placeholder { color:#b5bdb9; }
+    .field-help { display:block;margin-top:6px;font:400 11px/1.5 "DM Sans",sans-serif;color:#96a19d; }
+    .field-row { display:grid;grid-template-columns:1fr 1fr;gap:13px; }
+    .field-row .field { min-width: 0; }
+    .form-error { margin-top:13px;color:#b64c4c;font-size:12px;background:#fff0ef;padding:10px 12px;border-radius:8px; }
+    .dialog-actions { display:flex;justify-content:flex-end;gap:10px;margin-top:24px; }
+    .dialog-actions button { border-radius:10px;border:1px solid #e7e9e4;padding:10px 15px;font:900 12px "Nunito",sans-serif; }
+    .cancel-button { background:#fff;color:#7c8984; }
+    .save-button { background:#a2bfaf;color:#fff;border-color:#a2bfaf !important; }
+    .save-button:hover { background:#8eaf9c; }
+    /* Yeni ders satırı, ortak kayıt ve renkli sayaçlar */
+    .intro { margin-bottom: 26px; }
+    .intro h1 { margin: 0; color: #465851; font-size: clamp(37px, 6vw, 52px); letter-spacing: -.06em; }
+    .subject--history { --tint: #fff0ec; --accent: #e9a79b; --accent-dark: #c77e74; }
+    .subject--geo { --tint: #e8f4ef; --accent: #91c4ae; --accent-dark: #649e86; }
+    .subject--sun { --tint: #fff5d9; --accent: #e3bd76; --accent-dark: #b68c42; }
+    .subject--blue { --tint: #eaf1ff; --accent: #a3b8e8; --accent-dark: #768fbd; }
+    .subject--pink { --tint: #fdebf2; --accent: #dfa5bc; --accent-dark: #b97695; }
+    .icon-button[data-action="undo"] { color:#bf625e; background: #fff0ee; border-color:#f6dcda; }
+    .icon-button[data-action="undo"]:hover:not(:disabled) { color:#a6423d; background:#ffe5e2; border-color:#e8b8b2; }
+    .add-button { background:#e4f4e7; color:#3a9062; border-color:#cde8d3; }
+    .add-button:hover:not(:disabled) { background:#d3ecd9; filter:none; }
+    .add-button:focus-visible, .icon-button:focus-visible {outline-offset:2px;}
+    .new-subject { width:100%; display:flex;justify-content:center;align-items:center;gap:11px; margin:9px 0 15px;min-height:54px;
+      border:1.5px dashed #c8d7cc;border-radius:17px;background:rgba(237,246,239,.45);color:#648a73;font:900 13px "Nunito",sans-serif; }
+    .new-subject:hover { border-color:#8caf99;background:#eaf5eb; }
+    .new-subject-icon { display:grid;place-items:center;width:25px;height:25px;border-radius:9px;background:#dceee0;color:#548466;font:900 19px/1 "Nunito",sans-serif; }
+    .dashboard-footer { display:flex; justify-content:center;gap:9px;flex-wrap:wrap; border-top:1px dashed #e6e9e2; padding-top:17px; }
+    .footer-brand {font:900 12px/1.5 "Nunito",sans-serif; color:#8da69a; letter-spacing:.025em;}
+    .connection-status.status-quiet, .connection-dot.status-quiet { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; padding:0; margin:-1px; border:0; }
+    .connection-status:not(.status-quiet) { color:#a66c55; font-size:11px; }
+    .intro h1 {margin:17px 0 5px; font-size:clamp(30px,4.5vw,42px); letter-spacing:-.04em;}
+    .intro p {font-size:14px; color:var(--muted);}
+
+    .connection-dot { width:7px;height:7px; border-radius:50%;background:#d2b66c; }
+    .connection-dot.is-online {background:#71af89;}
+    .connection-dot.is-error {background:#d9817b;}
+    .auth-link { font:800 11px "Nunito",sans-serif;color:#6b9080;border:0;padding:0;background:transparent;text-decoration:underline;text-underline-offset:3px; }
+    .close-dialog {font-size:21px;line-height:1;}
+    .split-actions {justify-content:space-between;align-items:center; flex-wrap:wrap;}
+    .dialog-action-right {display:flex;gap:10px;}
+    .delete-button {border-color:#f2d9d5!important;background:#fff1ee;color:#b95048;}
+    .delete-button:hover {background:#ffe9e5;}
+    .save-button:disabled {opacity:.65;cursor:wait;}
+    .subject-actions {flex-shrink:0;}
+    .subject.is-busy {opacity:.72;}
+    @media (max-width: 600px) {
+      body { padding:35px 13px 25px;place-items:start center; }
+      .deco {display:none;}
+      .intro {margin-bottom:22px;}
+      .intro h1 {font-size:31px;}
+      .intro p {max-width:320px;margin:auto;line-height:1.6;}
+      .dashboard {padding:20px 14px 17px;border-radius:22px;}
+      .dashboard-top {padding:3px 3px 19px;gap:8px;}
+      .overall-percent {font-size:25px;}
+      .overall-badge {font-size:10px;padding:7px 9px;}
+      .subjects-heading {margin:20px 2px 13px;}
+      .subject {padding:15px 13px 12px;border-radius:15px;}
+      .subject-head {gap:10px;}
+      .subject-icon {width:40px;height:40px;border-radius:12px;}
+      .subject-icon svg {width:21px;height:21px;}
+      .subject-labels h3 {font-size:15.5px;}
+      .subject-labels p {font-size:10px;}
+      .subject-count strong {font-size:16px;}
+      .subject-count small {font-size:10px;}
+      .subject-bottom {gap:6px;}
+      .list-link {font-size:10.5px;}
+      .subject-actions {gap:5px;}
+      .add-button {padding:7px 8px;font-size:10.5px;}
+      .icon-button {width:28px;height:28px;}
+      .dashboard-footer {font-size:10px;}
+    }
+    @media (max-width: 365px) {
+      .overview-right {gap:7px;}
+      .subject-labels p {display:none;}
+      .subject-actions {gap:4px;}
+      .add-button {padding:6px;}
+    }
+    @media (prefers-reduced-motion: reduce) {*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- Sayfanın okul temalı, dekoratif çizimleri -->
+    <svg class="deco deco--star" viewBox="0 0 80 80" fill="none" aria-hidden="true"><path d="m39 4 9.7 21.8L73 29l-18 16.1L60 70 39 57.3 17 70l5.3-24.9L5 29l24.4-3.2L39 4Z" fill="#f4dfad" stroke="#dfc78b" stroke-width="2"/><path d="m29 38 4-3m14 1 4 3M33 47c3 5 11 5 14 0" stroke="#b89d5f" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <svg class="deco deco--pencil" viewBox="0 0 80 90" fill="none" aria-hidden="true"><path d="M25 65 8 81l5-24 38-48c3-4 9-4 13-1l6 5c3 3 3 8 0 12L25 65Z" fill="#d1ded6" stroke="#9dbaa9" stroke-width="2"/><path d="m13 57 12 8M51 9l19 16M8 81l7-4-5-7" stroke="#9dbaa9" stroke-width="2"/><path d="M27 58 62 16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+    <svg class="deco deco--spark" viewBox="0 0 70 70" fill="none" aria-hidden="true"><path d="M33 4 38 26l24 6-24 7-5 23-6-23-23-7 23-6 6-22Z" fill="#d3d6ed" stroke="#b5bedc" stroke-width="2"/></svg>
+
+    <header class="intro">
+      <h1>Video çalışma panom.</h1>
+      <p>İzlediklerini işaretle, ilerlemeni gör, kaldığın yerden devam et.</p>
+    </header>
+
+    <section class="dashboard" aria-label="Video çalışma takip paneli">
+      <div class="dashboard-top">
+        <div>
+          <div class="overview-title">Genel ilerleme <span aria-hidden="true">✦</span></div>
+          <div class="overview-caption" id="overallDescription" aria-live="polite">Önce video sayılarını ekle</div>
+        </div>
+        <div class="overview-right">
+          <span class="overall-percent" id="overallPercent">%0</span>
+          <span class="overall-badge" id="overallBadge">0 video tamamlandı</span>
+        </div>
+      </div>
+      <div class="subjects-heading">
+        <h2>Oynatma listelerim</h2>
+        <span id="subjectTotal">3 ders <span aria-hidden="true">✳</span></span>
+      </div>
+
+      <div id="subjectList" aria-live="polite"></div>
+      <button class="new-subject" type="button" id="newSubject">
+        <span class="new-subject-icon" aria-hidden="true">+</span>
+        <span>Ders ekle</span>
+      </button>
+      <div class="dashboard-footer">
+        <span class="footer-brand">Sekolata</span>
+        <span class="connection-dot" id="connectionDot" aria-hidden="true"></span>
+        <span id="connectionStatus" class="connection-status" role="status" aria-live="polite">Yükleniyor...</span>
+        <button class="auth-link" id="authButton" type="button" hidden>Yönetici girişi</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="edit-dialog" id="editDialog" aria-labelledby="dialogTitle">
+    <form id="editForm" novalidate>
+      <div class="dialog-header">
+        <div><div class="dialog-kicker">Oynatma listesi</div><h2 id="dialogTitle">Ders düzenle</h2></div>
+        <button type="button" class="close-dialog" data-close="editDialog" aria-label="Pencereyi kapat">×</button>
+      </div>
+      <label class="field"><span>Ders adı</span><input id="nameInput" type="text" maxlength="60" required placeholder="Örn. Matematik"></label>
+      <div class="field-row">
+        <label class="field"><span>Toplam video</span><input id="totalInput" type="number" inputmode="numeric" min="0" max="100000" step="1" required></label>
+        <label class="field"><span>İzlenen video</span><input id="doneInput" type="number" inputmode="numeric" min="0" max="100000" step="1" required></label>
+      </div>
+      <label class="field"><span>YouTube oynatma listesi</span><input id="urlInput" type="url" inputmode="url" maxlength="2048" autocomplete="off" placeholder="https://www.youtube.com/playlist?list=..."><small class="field-help">İstersen bu alanı boş bırakabilirsin.</small></label>
+      <p class="form-error" id="formError" role="alert" hidden></p>
+      <div class="dialog-actions split-actions"><button type="button" class="delete-button" id="deleteSubject" hidden>Dersi sil</button><div class="dialog-action-right"><button type="button" class="cancel-button" data-close="editDialog">Vazgeç</button><button type="submit" class="save-button" id="saveSubject">Kaydet</button></div></div>
+    </form>
+  </dialog>
+  <dialog class="edit-dialog auth-dialog" id="authDialog" aria-labelledby="authTitle">
+    <form id="authForm" novalidate>
+      <div class="dialog-header"><div><div class="dialog-kicker">Sekolata</div><h2 id="authTitle">Yönetici girişi</h2></div><button type="button" class="close-dialog" data-close="authDialog" aria-label="Pencereyi kapat">×</button></div>
+      <label class="field"><span>E-posta</span><input id="emailInput" type="email" autocomplete="username" required placeholder="E-posta adresin"></label>
+      <label class="field"><span>Şifre</span><input id="passwordInput" type="password" autocomplete="current-password" required placeholder="Şifren"></label>
+      <p class="form-error" id="authError" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="cancel-button" data-close="authDialog">Vazgeç</button><button type="submit" class="save-button" id="signInButton">Giriş yap</button></div>
+    </form>
+  </dialog>
+  <!-- Supabase yapılandırılmışsa kütüphane kullanılır; demo modu bağımsızdır. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (() => {
+      'use strict';
+
+      // Ortak kayıt için Supabase projenin adresini ve PUBLISHABLE/ANON key'ini gir.
+      // Service role / secret key'i ASLA buraya yazma.
+      const SUPABASE_URL = 'https://cilvblpqydnrtryvghit.supabase.co';
+      const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4rQddILKAqL8_HJVOk8pjQ_VXazUAN_';
+
+      const LOCAL_KEY = 'ags-video-panom-v2';
+      const OLD_LOCAL_KEY = 'ags-video-panom-v1';
+      const DEFAULT_SUBJECTS = [
+        {id: 'ags', title: 'AGS', total: 0, done: 0, playlist_url: '', sort_order: 0},
+        {id: 'tarih', title: 'Tarih', total: 0, done: 0, playlist_url: '', sort_order: 1},
+        {id: 'cografya', title: 'Coğrafya', total: 0, done: 0, playlist_url: '', sort_order: 2}
+      ];
+      const PALETTE = ['subject--ags','subject--history','subject--geo','subject--sun','subject--blue','subject--pink'];
+      const ICONS = [
+        '<path d="M12 6.5C9.3 4.6 6 4.3 3 5v13c3-.7 6.3-.4 9 1.5C14.7 17.6 18 17.3 21 18V5c-3-.7-6.3-.4-9 1.5Z"/><path d="M12 6.5v13M6 9h3M15 9h3"/>',
+        '<path d="m3 10 9-6 9 6M4 20h16M5.5 11.5v6M10 11.5v6M14 11.5v6M18.5 11.5v6M3 10h18"/>',
+        '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-3 3-4.5 6-4.5 9s1.5 6 4.5 9M12 3c3 3 4.5 6 4.5 9s-1.5 6-4.5 9"/>',
+        '<path d="M7 4h10v16H7zM10 8h4M10 12h4M10 16h4"/>',
+        '<path d="M3 17 10 5l4 8 3-4 4 8H3Z"/>',
+        '<path d="M12 3 4 7v10l8 4 8-4V7l-8-4ZM4 7l8 4 8-4M12 11v10"/>'
+      ];
+      const qs = id => document.getElementById(id);
+      const integer = (n, fallback=0) => Number.isSafeInteger(Number(n)) && Number(n)>=0 && Number(n)<=100000 ? Number(n) : fallback;
+      const validUrl = raw => {
+        if (!raw) return '';
+        try {
+          const u = new URL(raw);
+          const host = u.hostname.toLowerCase();
+          return u.protocol === 'https:' && (host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtu.be') ? u.href : '';
+        } catch { return ''; }
+      };
+      const normalize = d => ({
+        id: String(d.id), title: String(d.title || 'Yeni ders').slice(0,60),
+        total: integer(d.total), done: Math.min(integer(d.done), integer(d.total)),
+        playlist_url: validUrl(d.playlist_url || d.url || ''), sort_order: Number(d.sort_order)||0
+      });
+      const configured = Boolean(SUPABASE_URL.trim() && SUPABASE_PUBLISHABLE_KEY.trim());
+      const mode = configured ? (window.supabase?.createClient ? 'shared' : 'broken') : 'demo';
+      const db = mode === 'shared' ? window.supabase.createClient(SUPABASE_URL.trim(), SUPABASE_PUBLISHABLE_KEY.trim(), {
+        auth: {persistSession:true, autoRefreshToken:true, detectSessionInUrl:false}
+      }) : null;
+      let subjects = [];
+      let session = null;
+      let loaded = mode === 'demo';
+      let connectionError = '';
+      let editorId = null;
+      const busy = new Set();
+
+      function isEditor() { return mode === 'demo' || (mode === 'shared' && !!session?.user); }
+      function demoSubjects() {
+        try {
+          const modern = JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null');
+          if (Array.isArray(modern)) return modern.map(normalize);
+          const legacy = JSON.parse(localStorage.getItem(OLD_LOCAL_KEY) || 'null');
+          if (legacy && typeof legacy === 'object') return DEFAULT_SUBJECTS.map(item => normalize({...item, ...(legacy[item.id] || {})}));
+        } catch { /* Çerezler kapalıysa varsayılan liste kullanılır. */ }
+        return DEFAULT_SUBJECTS.map(normalize);
+      }
+      function saveDemo() {
+        try { localStorage.setItem(LOCAL_KEY, JSON.stringify(subjects)); }
+        catch { message('Tarayıcı kayıt izni vermiyor; değişiklikler kalıcı olmayabilir.'); }
+      }
+      function message(value, failed=false) {
+        qs('connectionStatus').textContent = value;
+        qs('connectionDot').classList.toggle('is-error', failed);
+        qs('connectionDot').classList.toggle('is-online', !failed && mode === 'shared' && loaded);
+      }
+      function updateStatus() {
+        const button = qs('authButton');
+        button.hidden = mode !== 'shared';
+        button.textContent = session?.user ? 'Çıkış yap' : 'Yönetici girişi';
+        if (mode === 'demo') message('Önizleme modu · Kayıtlar yalnızca bu tarayıcıda');
+        else if (mode === 'broken') message('Ortak kayıt kütüphanesi yüklenemedi.', true);
+        else if (connectionError) message(connectionError, true);
+        else if (!loaded) message('Ortak veriler yükleniyor...');
+        else message(session?.user ? 'Ortak kayıt açık · Giriş yapıldı' : 'Ortak kayıt açık · Herkes aynı ilerlemeyi görüyor');
+        const failure = mode === 'broken' || !!connectionError || !loaded;
+        qs('connectionStatus').classList.toggle('status-quiet', !failure);
+        qs('connectionDot').classList.toggle('status-quiet', !failure);
+      }
+      function subjectElement(item, index) {
+        const el = document.createElement('article');
+        el.className = `subject ${PALETTE[index % PALETTE.length]}${busy.has(item.id) ? ' is-busy' : ''}`;
+        el.dataset.subject = item.id;
+        el.innerHTML = `
+          <div class="subject-head">
+            <div class="subject-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[index % ICONS.length]}</svg></div>
+            <div class="subject-labels"><h3 data-title></h3><p data-subtitle></p></div>
+            <div class="subject-count"><strong data-count></strong><small data-remaining></small></div>
+          </div>
+          <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div class="fill" data-fill></div></div>
+          <div class="subject-bottom">
+            <a class="list-link" data-link href="#"><span data-link-text></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <div class="subject-actions">
+              <button class="icon-button" type="button" data-action="undo" title="Bir video geri al" aria-label="Bir video geri al"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+              <button class="add-button" type="button" data-action="add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> İzledim</button>
+              <button class="icon-button" type="button" data-action="edit" aria-label="Dersi düzenle" title="Düzenle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 4.5l3 3M4 17l-.5 3.5L7 20l11.5-11.5a2.1 2.1 0 0 0-3-3L4 17Z"/></svg></button>
+            </div>
+          </div>`;
+        el.querySelector('[data-title]').textContent = item.title;
+        el.querySelector('[data-subtitle]').textContent = index < 3 && ['Akademi Giriş Sınavı','Geçmişi keşfet','Dünyayı tanı'][index] || 'Video çalışma listesi';
+        const left = item.total-item.done;
+        const percent = item.total ? Math.round(item.done / item.total * 100) : 0;
+        el.querySelector('[data-count]').textContent = `${item.done} / ${item.total}`;
+        el.querySelector('[data-remaining]').textContent = item.total ? (left ? `${left} video kaldı` : 'Hepsi tamamlandı! ✨') : 'Listeyi düzenle';
+        el.querySelector('[data-fill]').style.width = `${percent}%`;
+        el.querySelector('.track').setAttribute('aria-label', `${item.title} tamamlanma oranı`);
+        el.querySelector('.track').setAttribute('aria-valuenow', String(percent));
+        el.querySelector('[data-action="undo"]').disabled = item.done === 0 || busy.has(item.id) || mode === 'broken' || (mode === 'shared' && !loaded);
+        el.querySelector('[data-action="add"]').disabled = item.total === 0 || item.done >= item.total || busy.has(item.id) || mode === 'broken' || (mode === 'shared' && !loaded);
+        el.querySelector('[data-action="edit"]').disabled = busy.has(item.id) || mode === 'broken' || (mode === 'shared' && !loaded);
+        const link = el.querySelector('[data-link]');
+        if (item.playlist_url) {
+          link.href = item.playlist_url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+          link.querySelector('[data-link-text]').textContent = 'Oynatma listesini aç';
+        } else {
+          link.querySelector('[data-link-text]').textContent = 'Oynatma listesi ekle';
+        }
+        link.setAttribute('aria-label', `${item.title} oynatma listesi`);
+        return el;
+      }
+      function render() {
+        const target = qs('subjectList');
+        const fragment = document.createDocumentFragment();
+        let total = 0, done = 0;
+        subjects.forEach((s,i) => { total += s.total; done += s.done; fragment.append(subjectElement(s,i)); });
+        target.replaceChildren(fragment);
+        const left = total-done;
+        qs('overallPercent').textContent = `%${total ? Math.round(done/total*100) : 0}`;
+        qs('overallBadge').textContent = `${done} video tamamlandı`;
+        qs('overallDescription').textContent = total ? `${total} videonun ${left} tanesi kaldı` : 'Önce video sayılarını ekle';
+        qs('subjectTotal').textContent = `${subjects.length} ders ✳`;
+        qs('newSubject').disabled = mode === 'broken' || (mode === 'shared' && !loaded);
+        updateStatus();
+      }
+      function requireEditor() {
+        if (isEditor()) return true;
+        if (mode === 'shared') qs('authDialog').showModal();
+        return false;
+      }
+      function openEditor(id=null) {
+        if (!requireEditor()) return;
+        editorId = id;
+        const item = id === null ? null : subjects.find(s => s.id === id);
+        if (id !== null && !item) return;
+        qs('dialogTitle').textContent = item ? `${item.title} listesi` : 'Yeni ders ekle';
+        qs('nameInput').value = item?.title || '';
+        qs('totalInput').value = String(item?.total ?? 0);
+        qs('doneInput').value = String(item?.done ?? 0);
+        qs('urlInput').value = item?.playlist_url || '';
+        qs('deleteSubject').hidden = !item;
+        qs('formError').hidden = true;
+        qs('editDialog').showModal();
+        qs('nameInput').focus();
+      }
+      function showError(err, id='formError') {
+        const el = qs(id);
+        el.textContent = (err && typeof err.message === 'string' ? err.message : String(err || 'İşlem başarısız.'));
+        el.hidden = false;
+      }
+      async function refreshShared() {
+        if (!db) return;
+        const {data,error} = await db.from('video_subjects').select('id,title,total,done,playlist_url,sort_order').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
+        if (error) { connectionError = 'Ortak veriler okunamadı. Bağlantıyı ve SQL ayarlarını kontrol et.'; updateStatus(); return; }
+        connectionError = '';
+        subjects = (data || []).map(normalize);
+        loaded = true;
+        render();
+      }
+      async function changeProgress(id, delta) {
+        if (!requireEditor() || busy.has(id)) return;
+        const item = subjects.find(s => s.id === id);
+        if (!item || (delta > 0 && item.done >= item.total) || (delta < 0 && item.done <= 0)) return;
+        if (mode === 'demo') { item.done += delta; saveDemo(); render(); return; }
+        busy.add(id); render();
+        try {
+          const {data,error} = await db.rpc('change_video_progress',{p_id:id,p_delta:delta});
+          if (error) throw error;
+          if (!data?.length) throw new Error('Değişiklik kaydedilemedi. Yönetici yetkisini kontrol et.');
+          await refreshShared();
+        } catch (e) { window.alert('Video güncellenemedi: '+e.message); }
+        finally { busy.delete(id); render(); }
+      }
+      qs('subjectList').addEventListener('click', event => {
+        const article = event.target.closest('[data-subject]');
+        if (!article) return;
+        const id = article.dataset.subject;
+        const action = event.target.closest('[data-action]');
+        if (action) {
+          if (action.dataset.action === 'edit') openEditor(id);
+          else if (action.dataset.action === 'add') void changeProgress(id,1);
+          else if (action.dataset.action === 'undo') void changeProgress(id,-1);
+        } else if (event.target.closest('[data-link]')) {
+          const item = subjects.find(s => s.id === id);
+          if (item && !item.playlist_url) { event.preventDefault(); openEditor(id); }
+        }
+      });
+      qs('newSubject').addEventListener('click', () => openEditor());
+      qs('editForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        const title = qs('nameInput').value.trim();
+        const total = Number(qs('totalInput').value);
+        const done = Number(qs('doneInput').value);
+        const urlRaw = qs('urlInput').value.trim();
+        const url = validUrl(urlRaw);
+        qs('formError').hidden = true;
+        if (!title || title.length > 60) return showError('Ders adını 1-60 karakter arasında yaz.');
+        if (!Number.isSafeInteger(total) || total < 0 || total > 100000 || !Number.isSafeInteger(done) || done < 0 || done > 100000) return showError('Video sayılarını 0 ile 100.000 arasında tam sayı olarak gir.');
+        if (done > total) return showError('İzlenen video sayısı toplam videodan fazla olamaz.');
+        if (urlRaw && !url) return showError('Yalnızca geçerli HTTPS YouTube bağlantısı girilebilir.');
+        if (urlRaw.length > 2048) return showError('Bağlantı çok uzun.');
+        const button = qs('saveSubject');
+        button.disabled = true;
+        try {
+          if (mode === 'demo') {
+            if (editorId) Object.assign(subjects.find(s => s.id === editorId), {title,total,done,playlist_url:url});
+            else subjects.push({id:crypto.randomUUID ? crypto.randomUUID() : `ders-${Date.now()}`, title,total,done,playlist_url:url,sort_order:subjects.length});
+            saveDemo();
+          } else {
+            if (!requireEditor()) return;
+            const payload = {title,total,done,playlist_url:url};
+            const query = editorId ? db.from('video_subjects').update(payload).eq('id', editorId) : db.from('video_subjects').insert({...payload,sort_order:Math.max(-1,...subjects.map(s=>s.sort_order))+1});
+            const {data,error} = await query.select('id');
+            if (error) throw error;
+            if (!data?.length) throw new Error('Değişiklik yetkisi bulunamadı. SQL politikasını kontrol et.');
+            await refreshShared();
+          }
+          qs('editDialog').close(); render();
+        } catch(e) {showError(e);} finally {button.disabled = false;}
+      });
+      qs('deleteSubject').addEventListener('click', async () => {
+        if (!editorId || !requireEditor()) return;
+        const item = subjects.find(s => s.id === editorId);
+        if (!item || !window.confirm(`“${item.title}” dersini ve ilerlemesini kalıcı olarak silmek istiyor musun?`)) return;
+        qs('formError').hidden = true;
+        qs('deleteSubject').disabled = true;
+        try {
+          if (mode === 'demo') { subjects = subjects.filter(s => s.id !== editorId); saveDemo(); }
+          else {
+            const {data,error} = await db.from('video_subjects').delete().eq('id',editorId).select('id');
+            if (error) throw error;
+            if (!data?.length) throw new Error('Ders silinemedi. Yönetici yetkisini kontrol et.');
+            await refreshShared();
+          }
+          qs('editDialog').close(); render();
+        } catch(e) {showError(e);} finally {qs('deleteSubject').disabled = false;}
+      });
+      for (const close of document.querySelectorAll('[data-close]')) close.addEventListener('click', () => qs(close.dataset.close).close());
+      for (const dlg of document.querySelectorAll('dialog')) dlg.addEventListener('click', e => {if (e.target===dlg) dlg.close();});
+      qs('authButton').addEventListener('click', async () => {
+        if (!db) return;
+        if (session?.user) { await db.auth.signOut(); session = null; render(); }
+        else {qs('authError').hidden = true;qs('authDialog').showModal();qs('emailInput').focus();}
+      });
+      qs('authForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        qs('authError').hidden = true;
+        const button = qs('signInButton'); button.disabled = true;
+        try {
+          const {data,error} = await db.auth.signInWithPassword({email:qs('emailInput').value.trim(),password:qs('passwordInput').value});
+          if (error) throw error;
+          session = data.session;
+          qs('passwordInput').value = '';
+          qs('authDialog').close();
+          render();
+        } catch(err) { showError(new Error('Giriş başarısız. E-posta veya şifreyi kontrol et.'),'authError'); }
+        finally {button.disabled = false;}
+      });
+
+      async function init() {
+        if (mode === 'demo') { subjects = demoSubjects(); render(); return; }
+        if (mode === 'broken') { render(); return; }
+        const {data} = await db.auth.getSession();
+        session = data.session;
+        db.auth.onAuthStateChange((_event,newSession) => {session = newSession;render();});
+        await refreshShared();
+        db.channel('sek olata-videolar'.replace(' ',''))
+          .on('postgres_changes',{event:'*',schema:'public',table:'video_subjects'},() => void refreshShared())
+          .subscribe();
+        document.addEventListener('visibilitychange', () => {if (!document.hidden) void refreshShared();});
+        window.addEventListener('focus', () => void refreshShared());
+        // Realtime erişilemese bile her yarım dakikada bir ortak kayıt kontrol edilir.
+        setInterval(() => {if (!document.hidden) void refreshShared();},30000);
+      }
+      render();
+      void init();
+    })();
+
+  </script>
+</body>
+</html>
