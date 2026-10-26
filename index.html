@@ -276,6 +276,74 @@
       .add-button {padding:6px;}
     }
     @media (prefers-reduced-motion: reduce) {*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+    /* Üç kartlı mobil çalışma alanı: mevcut video kartının stiline dokunulmaz. */
+    body { grid-template-columns:minmax(0,1fr); }
+    .page { min-width:0; justify-self:center; }
+    .slide-viewport { position:relative; overflow:hidden; border-radius:27px; touch-action:pan-y; transition:height .38s ease; }
+    .slide-track { display:flex; width:100%; align-items:flex-start; transition:transform .58s cubic-bezier(.22,.84,.26,1); will-change:transform; }
+    .slide { flex:0 0 100%; width:100%; min-width:0; }
+    .slide .dashboard { width:100%; box-shadow:none; min-height:310px; }
+    .slide-viewport { box-shadow:var(--shadow); }
+    .slide-viewport::after { content:'';position:absolute;z-index:6;left:50%;top:40%;width:14px;height:14px;
+      border-radius:40% 60% 58% 42%;background:rgba(178,214,205,.38);filter:blur(2px);
+      opacity:0;transform:translate(-50%,-50%) scale(0);pointer-events:none; }
+    .slide-viewport.is-dropping::after { animation:slide-drop .56s ease-out both; }
+    @keyframes slide-drop {0%{opacity:0;transform:translate(-50%,-50%) scale(0)} 22%{opacity:.95;transform:translate(-50%,-50%) scale(5)} 64%{opacity:.4;transform:translate(-50%,-50%) scale(45)}100%{opacity:0;transform:translate(-50%,-50%) scale(60)}}
+    .slide-dots {display:flex;align-items:center;justify-content:center;gap:12px;margin:19px 0 7px;}
+    .slide-dot {width:9px;height:9px;padding:0;border:none;border-radius:50%;background:#cad4ce;
+      transition:width .34s,background .34s,transform .34s;}
+    .slide-dot[aria-current="true"] {width:26px;background:#91b8a6;border-radius:12px;}
+    .slide-dot:hover {transform:scale(1.18);}
+    .slide-sr {position:absolute;clip:rect(0 0 0 0);clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap;}
+    .panel-note {color:#99a7a0;font-size:11px;line-height:1.5;margin:2px 0 14px;}
+    .panel-empty {text-align:center;padding:24px 13px;border:1px dashed #dbe5dd;border-radius:14px;color:#9ea9a3;font-size:12px;background:#fcfdfb;}
+    .panel-error {font-size:12px;color:#a8564e;background:#fff1ee;border-radius:10px;padding:11px 13px;margin:10px 0;}
+    .subject-head--toggle {cursor:pointer;}
+    .subject-head--toggle:focus-visible{outline:3px solid #819ee3;outline-offset:4px;border-radius:10px;}
+    .expand-arrow {width:29px;height:29px;margin-left:3px;flex:0 0 29px;border-radius:10px;display:grid;place-items:center;background:#eef5ef;border:1px solid #e0eae0;color:#7c9b87;transition:background .2s,transform .2s;}
+    .expand-arrow svg {width:16px;height:16px;transition:transform .24s ease;}
+    .is-expanded .expand-arrow svg {transform:rotate(180deg);}
+    .subject-head--toggle:hover .expand-arrow {background:#e2eee4;}
+    .detail-expand {margin-top:14px;border-top:1px dashed #e7ece7;padding-top:11px;}
+    .detail-head {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:0 3px 7px;color:#9aa6a0;font:800 10px 'Nunito',sans-serif;}
+    .detail-row {display:flex;justify-content:space-between;align-items:center;gap:7px;min-height:38px;padding:6px 8px;border-radius:9px;background:#fafbf9;margin-top:5px;border:1px solid #f0f1ec;}
+    .detail-name{flex:1;min-width:0;font:800 11.5px 'Nunito',sans-serif;overflow-wrap:anywhere;}
+    .detail-values{white-space:nowrap;font:800 11px 'Nunito',sans-serif;font-variant-numeric:tabular-nums;color:#5e7b6e;}
+    .detail-edit {width:25px;height:25px;display:grid;place-items:center;background:#eef4ee;border:0;border-radius:7px;color:#789786;flex:0 0 auto;font:900 12px 'Nunito',sans-serif;}
+    .detail-mini{width:25px;height:25px;display:grid;place-items:center;border:0;border-radius:7px;font:900 16px 'Nunito',sans-serif;flex:0 0 auto;}
+    .detail-mini.minus{color:#bf625e;background:#fff0ee}.detail-mini.plus{color:#3a9062;background:#e4f4e7}
+    .detail-button {display:flex;justify-content:center;align-items:center;gap:8px;width:100%;min-height:40px;padding:7px 12px;margin-top:9px;border-radius:12px;border:1px solid #dbe9de;background:#f3f9f3;color:#568368;font:900 11px 'Nunito',sans-serif;transition:background .18s,border-color .18s,transform .18s;}
+    .detail-button:hover {background:#e9f4eb;border-color:#bcd8c3;}
+    .detail-button:active {transform:scale(.99)}
+    .detail-doodle {display:grid;place-items:center;width:25px;height:25px;border-radius:9px;background:#e0eee3;color:#578b6c;flex:0 0 25px;}
+    .detail-doodle svg{width:16px;height:16px;}
+    .score-chevron{display:inline-block;vertical-align:-3px;width:16px;height:16px;margin-right:5px;padding:2px;background:#e9f3eb;color:#7a9e85;border-radius:6px;transition:transform .2s;}
+    .exam-subject-row.is-expanded .score-chevron {transform:rotate(180deg);}
+    .question-share-note{color:#a0aaa4;font:700 10px/1.4 'Nunito',sans-serif;margin-top:-6px;margin-bottom:9px;}
+    .subject-bottom--expanded{margin-top:12px;}
+    .section-caption {font-size:11px;color:#9da5a6;}
+    .score-head{display:grid;grid-template-columns:minmax(0,1fr) 28px 28px 28px 27px;gap:3px;color:#a0aaa4;font:900 10px 'Nunito',sans-serif;padding:0 5px 5px;}
+    .score-head>span:not(:first-child){text-align:center}
+    .score-row{display:grid;grid-template-columns:minmax(0,1fr) 28px 28px 28px 27px;align-items:center;gap:3px;background:#fafbf9;border:1px solid #f0f1ec;border-radius:9px;padding:6px 5px;margin-top:5px;min-height:36px;}
+    .score-row .score-name{border:0;background:transparent;text-align:left;padding:3px 1px;overflow-wrap:anywhere;font:800 11px 'Nunito',sans-serif;color:#4d6057;min-width:0;}
+    .score-row .score-value{text-align:center;font:800 11px 'Nunito',sans-serif;font-variant-numeric:tabular-nums;}
+    .score-row .score-value.is-correct{color:#5c9d76}.score-row .score-value.is-wrong{color:#c47b73}.score-row .score-value.is-blank{color:#a6a18f}
+    .exam-month{margin:21px 2px 10px;font:900 12px 'Nunito',sans-serif;color:#829c8b;text-transform:capitalize;}
+    .exam-month:first-child{margin-top:4px;}
+    .exam-card .subject-labels p {white-space:normal;}
+    .exam-subject-block {margin-top:7px;}
+    .exam-topic-wrap {padding:4px 0 4px 13px;margin-left:10px;border-left:2px solid #dce9df;}
+    .exam-subject-row .score-name {cursor:pointer;}
+
+    .panel-tools {display:flex;justify-content:space-between;align-items:center;gap:7px;margin:8px 0 14px;}
+    .panel-tools .new-subject{margin:0;}
+    .panel-tools .new-subject{width:100%;}
+    .subpanel-footer{border-top:1px dashed #e6e9e2;padding-top:16px;text-align:center;color:#8da69a;font:900 12px 'Nunito',sans-serif;}
+    .field[hidden], .field-row[hidden]{display:none!important;}
+    .panel-overview-badge {white-space:normal;text-align:center;}
+    @media(max-width:600px){.slide-viewport{border-radius:22px}.slide .dashboard{padding:20px 14px 17px}.slide-dots{margin:16px 0 7px}.score-row{grid-template-columns:minmax(0,1fr) 25px 25px 25px 24px;gap:2px}.score-head{grid-template-columns:minmax(0,1fr) 25px 25px 25px 24px;gap:2px}}
+    @media(prefers-reduced-motion:reduce){.slide-track{transition:none!important}.slide-viewport.is-dropping::after{animation:none!important}}
   </style>
 </head>
 <body>
@@ -290,7 +358,17 @@
       <p>iyi gidiyon aşk</p>
     </header>
 
-    <section class="dashboard" aria-label="Video çalışma takip paneli">
+    <div class="slide-viewport" id="slideViewport" aria-label="Çalışma panoları">
+      <div class="slide-track" id="slideTrack" style="transform:translateX(-100%)">
+        <div class="slide" data-slide="question" aria-hidden="true" inert>    <section class="dashboard" aria-label="Soru çözme takip paneli">
+      <div class="dashboard-top"><div><div class="overview-title">Soru Çözme</div><div class="overview-caption" id="questionOverview">Konuları ve soruları takip et</div></div>
+        <div class="overview-right"><span class="overall-percent" id="questionPercent">%0</span><span class="overall-badge panel-overview-badge" id="questionBadge">0 soru çözüldü</span></div></div>
+      <div class="subjects-heading"><h2>Dersler</h2><span id="questionSubjectTotal">0 ders ✳</span></div>
+      <div id="questionList" aria-live="polite"></div>
+      <button class="new-subject" type="button" id="addQuestionSubject"><span class="new-subject-icon" aria-hidden="true">+</span><span>Ders ekle</span></button>
+      <div class="subpanel-footer">Sekolata</div>
+    </section></div>
+        <div class="slide" data-slide="video">    <section class="dashboard" aria-label="Video çalışma takip paneli">
       <div class="dashboard-top">
         <div>
           <div class="overview-title"> Genel <span aria-hidden="true"> Durum </span></div>
@@ -317,7 +395,23 @@
         <span id="connectionStatus" class="connection-status" role="status" aria-live="polite">Yükleniyor...</span>
         <button class="auth-link" id="authButton" type="button" hidden>dümenden giriş</button>
       </div>
-    </section>
+    </section></div>
+        <div class="slide" data-slide="exam" aria-hidden="true" inert>    <section class="dashboard" aria-label="Aylık deneme takip paneli">
+      <div class="dashboard-top"><div><div class="overview-title">Deneme Takibi</div><div class="overview-caption" id="examOverview">Denemelerin aylık özeti</div></div>
+        <div class="overview-right"><span class="overall-percent" id="examTotal">0</span><span class="overall-badge panel-overview-badge" id="examBadge">deneme</span></div></div>
+      <div class="subjects-heading"><h2>Aylık denemeler</h2><span id="examStats">0 kayıt ✳</span></div>
+      <div id="examList" aria-live="polite"></div>
+      <button class="new-subject" type="button" id="addExam"><span class="new-subject-icon" aria-hidden="true">+</span><span>Deneme ekle</span></button>
+      <div class="subpanel-footer">Sekolata</div>
+    </section></div>
+      </div>
+    </div>
+    <nav class="slide-dots" aria-label="Panel seçimi">
+      <button type="button" class="slide-dot" data-slide-to="0" aria-label="Soru çözme sayfası" aria-current="false"></button>
+      <button type="button" class="slide-dot" data-slide-to="1" aria-label="Video sayfası" aria-current="true"></button>
+      <button type="button" class="slide-dot" data-slide-to="2" aria-label="Deneme sayfası" aria-current="false"></button>
+    </nav>
+    <span class="slide-sr" id="slideAnnouncer" aria-live="polite"></span>
   </main>
 
   <dialog class="edit-dialog" id="editDialog" aria-labelledby="dialogTitle">
@@ -343,6 +437,20 @@
       <label class="field"><span>Şifre</span><input id="passwordInput" type="password" autocomplete="current-password" required placeholder="Şifren"></label>
       <p class="form-error" id="authError" role="alert" hidden></p>
       <div class="dialog-actions"><button type="button" class="cancel-button" data-close="authDialog">Vazgeç</button><button type="submit" class="save-button" id="signInButton">Giriş yap</button></div>
+    </form>
+  </dialog>
+  <dialog class="edit-dialog" id="extraDialog" aria-labelledby="extraDialogTitle">
+    <form id="extraForm" novalidate>
+      <div class="dialog-header"><div><div class="dialog-kicker" id="extraKicker">Sekolata</div><h2 id="extraDialogTitle">Kayıt ekle</h2></div><button type="button" class="close-dialog" data-close="extraDialog" aria-label="Pencereyi kapat">×</button></div>
+      <label class="field" id="extraNameField"><span id="extraNameLabel">Ad</span><input id="extraName" type="text" maxlength="80" required placeholder="Ad gir"></label>
+      <label class="field" id="extraDateField" hidden><span>Deneme tarihi</span><input id="extraDate" type="date" required></label>
+      <label class="field" id="extraUrlField" hidden><span>YouTube oynatma listesi</span><input id="extraUrl" type="url" maxlength="2048" placeholder="https://www.youtube.com/playlist?list=..."></label>
+      <div id="extraQuestionFields" hidden><label class="field"><span>Çözülen soru</span><input id="extraQuestionSolved" type="number" min="0" max="100000" step="1" inputmode="numeric"></label></div>
+      <div class="field-row" id="extraScoreFields" hidden><label class="field"><span>Doğru</span><input id="extraCorrect" type="number" min="0" max="100000" step="1" inputmode="numeric"></label><label class="field"><span>Yanlış</span><input id="extraWrong" type="number" min="0" max="100000" step="1" inputmode="numeric"></label></div>
+      <label class="field" id="extraBlankField" hidden><span>Boş</span><input id="extraBlank" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+      <p class="field-help" id="extraHelp" style="margin-top:12px"></p>
+      <p class="form-error" id="extraError" role="alert" hidden></p>
+      <div class="dialog-actions split-actions"><button type="button" class="delete-button" id="extraDelete" hidden>Sil</button><div class="dialog-action-right"><button type="button" class="cancel-button" data-close="extraDialog">Vazgeç</button><button type="submit" class="save-button" id="extraSave">Kaydet</button></div></div>
     </form>
   </dialog>
   <!-- Supabase yapılandırılmışsa kütüphane kullanılır; demo modu bağımsızdır. -->
@@ -635,6 +743,299 @@
         // Realtime erişilemese bile her yarım dakikada bir ortak kayıt kontrol edilir.
         setInterval(() => {if (!document.hidden) void refreshShared();},30000);
       }
+
+      // EK PANOLAR: video verisine ve mevcut video işlevlerine müdahale etmez.
+      let activeSlide=1;
+      const slideNames=['Soru çözme','Video çalışma panom','Deneme takibi'];
+      const slideHeadings=['Soru çözme panom.','Video çalışma panom.','Deneme takip panom.'];
+      const originalSubtitle=document.querySelector('.intro p').textContent;
+      let dropTimeout;
+      function syncSlideHeight(){
+        const panel=document.querySelectorAll('.slide')[activeSlide];
+        if(panel)qs('slideViewport').style.height=panel.offsetHeight+'px';
+      }
+      function moveSlide(next) {
+        if (next<0 || next>2 || next===activeSlide) return;
+        activeSlide=next;
+        syncSlideHeight();
+        qs('slideTrack').style.transform=`translateX(-${activeSlide*100}%)`;
+        document.querySelectorAll('[data-slide-to]').forEach(dot=>dot.setAttribute('aria-current',String(Number(dot.dataset.slideTo)===activeSlide)));
+        document.querySelectorAll('.slide').forEach((el,index)=>{
+          const inactive=index!==activeSlide;el.setAttribute('aria-hidden',String(inactive));el.inert=inactive;
+        });
+        document.querySelector('.intro h1').textContent=slideHeadings[activeSlide];
+        document.querySelector('.intro p').textContent=activeSlide===1 ? originalSubtitle : (activeSlide===0 ? 'Her konu, bir adım daha.' : 'Her ay bir adım ileri.');
+        qs('slideAnnouncer').textContent=slideNames[activeSlide];
+        const viewport=qs('slideViewport');
+        viewport.classList.remove('is-dropping');void viewport.offsetWidth;
+        viewport.classList.add('is-dropping');
+        clearTimeout(dropTimeout);dropTimeout=setTimeout(()=>viewport.classList.remove('is-dropping'),600);
+      }
+      document.querySelectorAll('[data-slide-to]').forEach(b=>b.addEventListener('click',()=>moveSlide(Number(b.dataset.slideTo))));
+      let touchStart=null;
+      const touchZone=qs('slideViewport');
+      touchZone.addEventListener('touchstart',event=>{
+        if(event.touches.length!==1) return;
+        const t=event.touches[0];touchStart={x:t.clientX,y:t.clientY};
+      },{passive:true});
+      touchZone.addEventListener('touchend',event=>{
+        if(!touchStart || !event.changedTouches.length) return;
+        const t=event.changedTouches[0], dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;
+        touchStart=null;
+        // Fiziksel kaydırma yönü: parmak sağa -> soldaki Soru Çözme; sola -> sağdaki Denemeler.
+        if(Math.abs(dx)>=55 && Math.abs(dx)>Math.abs(dy)*1.25) moveSlide(activeSlide+(dx>0?-1:1));
+      },{passive:true});
+      touchZone.addEventListener('touchcancel',()=>touchStart=null);
+      const PANEL_TABLES=['question_subjects','question_topics','exam_sessions','exam_subjects','exam_topics'];
+      const PANEL_LOCAL_KEY='sekolata-ek-panolar-v1';
+      let qSubjects=[],qTopics=[],exams=[],examSubjects=[],examTopics=[];
+      let extrasReady=mode==='demo',extrasError='',pendingExtra=null;
+      const expandedQuestions=new Set(), expandedExams=new Set(),expandedExamSubjects=new Set();
+      const safeText=str=>String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const newId=()=>globalThis.crypto?.randomUUID?.() || `s${Date.now()}${Math.random().toString(36).slice(2)}`;
+      const totalScore=rows=>rows.reduce((a,r)=>({correct:a.correct+r.correct,wrong:a.wrong+r.wrong,blank:a.blank+r.blank}),{correct:0,wrong:0,blank:0});
+      const num=val=>Number(val)||0;
+      const normalizeExtra=(r)=>({...r,correct:num(r.correct),wrong:num(r.wrong),blank:num(r.blank),total:num(r.total),solved:num(r.solved)});
+      const dateLocal=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;};
+      function localExtraSave(){try{localStorage.setItem(PANEL_LOCAL_KEY,JSON.stringify({qSubjects,qTopics,exams,examSubjects,examTopics}));}catch(e){console.warn('Tarayıcı kayıt izni vermiyor; yeni panel değişiklikleri geçici olabilir.');}}
+      function localExtraLoad(){try{const d=JSON.parse(localStorage.getItem(PANEL_LOCAL_KEY)||'null');if(d){qSubjects=d.qSubjects||[];qTopics=d.qTopics||[];exams=d.exams||[];examSubjects=d.examSubjects||[];examTopics=d.examTopics||[];}}catch(e){console.warn('Yerel kayıtlar okunamadı; boş panolarla başlatılıyor.');}}
+      async function refreshExtras(){
+        if(mode==='demo'){localExtraLoad();extrasReady=true;renderExtras();return;}
+        if(!db){extrasError='Supabase bağlantısı kurulamadı.';renderExtras();return;}
+        try{
+          const responses=await Promise.all(PANEL_TABLES.map(table=>db.from(table).select('*').order('created_at',{ascending:true})));
+          const error=responses.find(r=>r.error)?.error;
+          if(error) throw error;
+          [qSubjects,qTopics,exams,examSubjects,examTopics]=responses.map(r=>(r.data||[]).map(normalizeExtra));
+          extrasReady=true;extrasError='';renderExtras();
+        }catch(e){extrasReady=false;extrasError='Yeni panolar için supabase-ek-panolar.sql dosyasını SQL Editor’da çalıştırmalısın.';renderExtras();}
+      }
+      async function panelSave(table,values,id=null){
+        if(mode==='demo'){
+          const arr=({question_subjects:qSubjects,question_topics:qTopics,exam_sessions:exams,exam_subjects:examSubjects,exam_topics:examTopics})[table];
+          if(id){const r=arr.find(x=>x.id===id);if(!r) throw new Error('Kayıt bulunamadı.');Object.assign(r,values);}
+          else {arr.push({id:newId(),created_at:new Date().toISOString(),...values});}
+          localExtraSave();renderExtras();return;
+        }
+        const {data,error}=await(id?db.from(table).update(values).eq('id',id):db.from(table).insert(values)).select('id');
+        if(error) throw error;
+        if(!data?.length)throw new Error('Değişiklik yetkisi bulunamadı. SQL politikalarını kontrol et.');
+        await refreshExtras();
+      }
+      async function panelDelete(table,id){
+        if(mode==='demo'){
+          if(table==='question_subjects'){qSubjects=qSubjects.filter(r=>r.id!==id);qTopics=qTopics.filter(r=>r.subject_id!==id);}
+          if(table==='question_topics')qTopics=qTopics.filter(r=>r.id!==id);
+          if(table==='exam_sessions'){const subids=examSubjects.filter(r=>r.exam_id===id).map(r=>r.id);exams=exams.filter(r=>r.id!==id);examSubjects=examSubjects.filter(r=>r.exam_id!==id);examTopics=examTopics.filter(r=>!subids.includes(r.exam_subject_id));}
+          if(table==='exam_subjects'){examSubjects=examSubjects.filter(r=>r.id!==id);examTopics=examTopics.filter(r=>r.exam_subject_id!==id);}
+          if(table==='exam_topics')examTopics=examTopics.filter(r=>r.id!==id);
+          localExtraSave();renderExtras();return;
+        }
+        const {data,error}=await db.from(table).delete().eq('id',id).select('id');
+        if(error)throw error;if(!data?.length)throw new Error('Silme yetkisi bulunamadı.');
+        await refreshExtras();
+      }
+      function panelAvailable(){if(!extrasReady){window.alert(extrasError||'Yeni panel verileri yükleniyor.');return false;}return requireEditor();}
+      function scoreForSubject(subject){const topics=examTopics.filter(t=>t.exam_subject_id===subject.id);return topics.length?totalScore(topics):subject;}
+      function scoreForExam(exam){return totalScore(examSubjects.filter(s=>s.exam_id===exam.id).map(scoreForSubject));}
+      function percentBar(percent,label){return `<div class="track" role="progressbar" aria-label="${safeText(label)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}"><div class="fill" style="width:${percent}%"></div></div>`;}
+      const addDoodle=`<span class="detail-doodle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h8l2 2h6v10H4z"/><path d="M7 3.5h10M12 12v5m-2.5-2.5h5"/></svg></span>`;
+      const foldDoodle=`<span class="expand-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>`;
+      const smallFoldDoodle=`<svg class="score-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+      function renderQuestions(){
+        const grandSolved=qTopics.reduce((sum,t)=>sum+t.solved,0);
+        const grandTopics=qTopics.length;
+        const html=qSubjects.map((s,i)=>{
+          const topics=qTopics.filter(t=>t.subject_id===s.id);
+          const solved=topics.reduce((sum,t)=>sum+t.solved,0);
+          const expanded=expandedQuestions.has(s.id);
+          // Hedef soru sayısı yok: çubuk, toplam çözülen sorulardaki payı gösterir; tamamlanma yüzdesi değildir.
+          const share=grandSolved?Math.round(100*solved/grandSolved):0;
+          const topicHtml=topics.map(t=>`<div class="detail-row"><span class="detail-name">${safeText(t.title)}</span>
+             <button class="detail-mini minus" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} bir soru geri al" ${!t.solved?'disabled':''}>−</button>
+             <span class="detail-values">${t.solved}</span>
+             <button class="detail-mini plus" data-qplus="${safeText(t.id)}" aria-label="${safeText(t.title)} bir soru çözüldü" ${t.solved>=100000?'disabled':''}>+</button>
+             <button class="detail-edit" data-qedit-topic="${safeText(t.id)}" aria-label="${safeText(t.title)} konusunu düzenle">✎</button></div>`).join('');
+          return `<article class="subject ${PALETTE[i%PALETTE.length]} ${expanded?'is-expanded':''}">
+              <div class="subject-head subject-head--toggle" role="button" tabindex="0" aria-expanded="${expanded}" data-qexpand="${safeText(s.id)}">
+                <div class="subject-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[i%ICONS.length]}</svg></div>
+                <div class="subject-labels"><h3>${safeText(s.title)}</h3><p>${topics.length} konu</p></div>
+                <div class="subject-count"><strong>${solved}</strong><small>soru çözüldü</small></div>${foldDoodle}</div>
+              ${percentBar(share,`${s.title}: çözülen sorular içindeki payı %${share}`)}
+              <div class="question-share-note">Toplam çözümün %${share}’i</div>
+              <div class="subject-bottom"><a class="list-link" href="${safeText(s.playlist_url||'#')}" data-question-link="${safeText(s.id)}" ${s.playlist_url?'target="_blank" rel="noopener noreferrer"':''}>${s.playlist_url?'Oynatma listesini aç':'Oynatma listesi ekle'} →</a>
+                <button class="icon-button" data-qedit-subject="${safeText(s.id)}" aria-label="${safeText(s.title)} dersini düzenle">✎</button></div>
+              <div class="detail-expand" ${expanded?'':'hidden'}><div class="detail-head"><span>Konu</span><span>Çözülen soru</span></div>
+                ${topicHtml||'<div class="panel-note">Henüz konu eklenmedi.</div>'}
+                <button class="detail-button" data-qadd-topic="${safeText(s.id)}">${addDoodle}<span>Konu ekle</span></button></div>
+            </article>`;
+        }).join('');
+        qs('questionList').innerHTML=extrasError?`<p class="panel-error">${safeText(extrasError)}</p>`:(html||'<div class="panel-empty">Henüz ders yok. Ders ekleyerek başlayabilirsin.</div>');
+        qs('questionPercent').textContent=String(grandSolved);
+        qs('questionBadge').textContent='soru çözüldü';
+        qs('questionOverview').textContent=grandTopics?`${grandTopics} konuda · ${qSubjects.length} ders`:'Çözmeye başlamak için ders ve konu ekle';
+        qs('questionSubjectTotal').textContent=`${qSubjects.length} ders ✳`;
+        qs('addQuestionSubject').disabled=!extrasReady;
+      }
+      const scoreHead=()=>'<div class="score-head"><span>Ders / konu</span><span>D</span><span>Y</span><span>B</span><span></span></div>';
+      function scoreRow({name,score,editAttr,editId,toggleAttr='',toggleId='',expanded=false,extraClass=''}){
+        return `<div class="score-row ${extraClass} ${expanded?'is-expanded':''}">
+          <button class="score-name" ${toggleAttr?`${toggleAttr}="${safeText(toggleId)}"`:`${editAttr}="${safeText(editId)}"`}>${toggleAttr?smallFoldDoodle:''}${safeText(name)}</button>
+          <span class="score-value is-correct">${score.correct}</span><span class="score-value is-wrong">${score.wrong}</span><span class="score-value is-blank">${score.blank}</span>
+          <button class="detail-edit" ${editAttr}="${safeText(editId)}" aria-label="${safeText(name)} düzenle">✎</button></div>`;
+      }
+      function renderExams(){
+        const sorted=[...exams].sort((a,b)=>b.exam_date.localeCompare(a.exam_date)||b.created_at.localeCompare(a.created_at));
+        let month='';
+        let html='';
+        for(const [index,e] of sorted.entries()){
+          const yymm=e.exam_date.slice(0,7);
+          if(yymm!==month){month=yymm;const formatted=new Intl.DateTimeFormat('tr-TR',{month:'long',year:'numeric'}).format(new Date(e.exam_date+'T12:00:00'));
+             html+=`<h3 class="exam-month">${safeText(formatted)}</h3>`;}
+          const subs=examSubjects.filter(s=>s.exam_id===e.id);
+          const score=scoreForExam(e),expanded=expandedExams.has(e.id);
+          const subHtml=subs.map(s=>{
+            const topics=examTopics.filter(t=>t.exam_subject_id===s.id),open=expandedExamSubjects.has(s.id);
+            const rows=topics.map(t=>scoreRow({name:t.title,score:t,editAttr:'data-eedit-topic',editId:t.id})).join('');
+            return `<div class="exam-subject-block">${scoreRow({name:s.title,score:scoreForSubject(s),editAttr:'data-eedit-subject',editId:s.id,toggleAttr:'data-eexpand-subject',toggleId:s.id,expanded:open,extraClass:'exam-subject-row'})}
+              <div class="exam-topic-wrap" ${open?'':'hidden'}>${scoreHead()}${rows||'<p class="panel-note">Bu ders için konu eklenmedi. D/Y/B sayıları ders satırından girilebilir.</p>'}
+                <button class="detail-button" data-eadd-topic="${safeText(s.id)}">${addDoodle}<span>Konu ekle</span></button></div></div>`;
+          }).join('');
+          html+=`<article class="subject ${PALETTE[index%PALETTE.length]} exam-card ${expanded?'is-expanded':''}">
+            <div class="subject-head subject-head--toggle" role="button" tabindex="0" aria-expanded="${expanded}" data-eexpand-exam="${safeText(e.id)}">
+             <div class="subject-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[index%ICONS.length]}</svg></div>
+             <div class="subject-labels"><h3>${safeText(e.title)}</h3><p>${safeText(new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long'}).format(new Date(e.exam_date+'T12:00:00')))} · ${subs.length} ders</p></div>
+             <div class="subject-count"><strong>${score.correct} D</strong><small>${score.wrong} Y · ${score.blank} B</small></div>${foldDoodle}</div>
+            ${percentBar(score.correct+score.wrong+score.blank?Math.round(score.correct/(score.correct+score.wrong+score.blank)*100):0,`${e.title} doğru cevap oranı`)}
+            <div class="subject-bottom"><span class="section-caption">Doğru · Yanlış · Boş</span><button class="icon-button" aria-label="Denemeyi düzenle" data-eedit-exam="${safeText(e.id)}">✎</button></div>
+            <div class="detail-expand" ${expanded?'':'hidden'}>${scoreHead()}${subHtml||'<div class="panel-note">Henüz ders eklenmedi.</div>'}
+              <button class="detail-button" data-eadd-subject="${safeText(e.id)}">${addDoodle}<span>Ders ekle</span></button>
+            </div></article>`;
+        }
+        qs('examList').innerHTML=extrasError?`<p class="panel-error">${safeText(extrasError)}</p>`:html||'<div class="panel-empty">Henüz deneme kaydı yok. İlk denemeni ekleyebilirsin.</div>';
+        const totals=totalScore(exams.map(scoreForExam));
+        qs('examTotal').textContent=String(exams.length);
+        qs('examBadge').textContent='deneme';
+        qs('examOverview').textContent=`${totals.correct} doğru · ${totals.wrong} yanlış · ${totals.blank} boş`;
+        qs('examStats').textContent=`${exams.length} kayıt ✳`;
+        qs('addExam').disabled=!extrasReady;
+      }
+      function renderExtras(){renderQuestions();renderExams();}
+      // Tek, yeniden kullanılabilir ekleme / düzenleme penceresi.
+      const EXTRA_CONFIG={
+        'question-subject':{table:'question_subjects',name:'Ders adı',label:'Soru çözme · Ders',url:true},
+        'question-topic':{table:'question_topics',name:'Konu adı',label:'Soru çözme · Konu',questions:true},
+        'exam':{table:'exam_sessions',name:'Deneme adı',label:'Deneme takip',date:true},
+        'exam-subject':{table:'exam_subjects',name:'Ders adı',label:'Deneme · Ders',score:true},
+        'exam-topic':{table:'exam_topics',name:'Konu adı',label:'Deneme · Konu',score:true}
+      };
+      function extraRecords(kind){return ({'question-subject':qSubjects,'question-topic':qTopics,'exam':exams,'exam-subject':examSubjects,'exam-topic':examTopics})[kind];}
+      function openExtra(kind,id=null,parentId=null){
+        if(!panelAvailable())return;
+        const cfg=EXTRA_CONFIG[kind],item=id?extraRecords(kind).find(x=>x.id===id):null;
+        if(id&&!item)return;
+        pendingExtra={kind,id,parentId};
+        qs('extraDialogTitle').textContent=id?`${cfg.name} düzenle`:`${cfg.name} ekle`;
+        qs('extraKicker').textContent=cfg.label;
+        qs('extraNameLabel').textContent=cfg.name;
+        qs('extraName').placeholder=kind==='exam'?'Örn. 1. Genel Deneme':kind.includes('topic')?'Örn. Sözcükte Anlam':'Örn. Tarih';
+        qs('extraName').value=item?.title||'';
+        qs('extraDateField').hidden=!cfg.date;qs('extraUrlField').hidden=!cfg.url;
+        qs('extraQuestionFields').hidden=!cfg.questions;
+        qs('extraScoreFields').hidden=!cfg.score;qs('extraBlankField').hidden=!cfg.score;
+        qs('extraDate').value=item?.exam_date||dateLocal();
+        qs('extraUrl').value=item?.playlist_url||'';
+        qs('extraQuestionSolved').value=String(item?.solved??0);
+        qs('extraCorrect').value=String(item?.correct??0);qs('extraWrong').value=String(item?.wrong??0);qs('extraBlank').value=String(item?.blank??0);
+        qs('extraHelp').textContent=kind==='exam-subject'?'Bu derse konu eklersen dersin toplam D/Y/B değerleri otomatik olarak konuların toplamından hesaplanır.':kind==='exam-topic'?'Konu sonuçları dersin ve denemenin toplamlarına otomatik eklenir.':kind==='question-topic'?'Çözdüğün soru sayısını yaz; daha sonra yeşil + ve kırmızı − ile güncelleyebilirsin.':'';
+        qs('extraDelete').hidden=!item;qs('extraError').hidden=true;
+        qs('extraDialog').showModal();qs('extraName').focus();
+      }
+      qs('addQuestionSubject').addEventListener('click',()=>openExtra('question-subject'));
+      qs('addExam').addEventListener('click',()=>openExtra('exam'));
+      const toggleSet=(set,id)=>set.has(id)?set.delete(id):set.add(id);
+      const activateOnKeyboard=(host,attr)=>host.addEventListener('keydown',e=>{
+        if((e.key==='Enter'||e.key===' ')&&e.target.matches(`[${attr}]`)){e.preventDefault();e.target.click();}
+      });
+      activateOnKeyboard(qs('questionList'),'data-qexpand');
+      activateOnKeyboard(qs('examList'),'data-eexpand-exam');
+      qs('questionList').addEventListener('click',async e=>{
+        const action=e.target.closest('button,a,[data-qexpand]');if(!action)return;
+        const d=action.dataset;
+        if('qexpand'in d){toggleSet(expandedQuestions,d.qexpand);renderQuestions();}
+        else if('qeditSubject'in d)openExtra('question-subject',d.qeditSubject);
+        else if('qaddTopic'in d)openExtra('question-topic',null,d.qaddTopic);
+        else if('qeditTopic'in d)openExtra('question-topic',d.qeditTopic);
+        else if('qplus'in d||'qminus'in d){
+          if(!panelAvailable())return;
+          const id=d.qplus||d.qminus,delta=d.qplus?1:-1;
+          const item=qTopics.find(t=>t.id===id);if(!item)return;
+          const target=item.solved+delta;if(target<0||target>100000)return;
+          action.disabled=true;
+          try{await panelSave('question_topics',{solved:target},id);}catch(err){window.alert('Soru sayısı güncellenemedi: '+err.message);}finally{action.disabled=false;}
+        }else if('questionLink'in d){const sub=qSubjects.find(s=>s.id===d.questionLink);if(!sub?.playlist_url){e.preventDefault();openExtra('question-subject',d.questionLink);}}
+      });
+      qs('examList').addEventListener('click',e=>{
+        const action=e.target.closest('button,[data-eexpand-exam]');if(!action)return;
+        const d=action.dataset;
+        if('eexpandExam'in d){toggleSet(expandedExams,d.eexpandExam);renderExams();}
+        else if('eeditExam'in d)openExtra('exam',d.eeditExam);
+        else if('eaddSubject'in d)openExtra('exam-subject',null,d.eaddSubject);
+        else if('eeditSubject'in d)openExtra('exam-subject',d.eeditSubject);
+        else if('eexpandSubject'in d){toggleSet(expandedExamSubjects,d.eexpandSubject);renderExams();}
+        else if('eaddTopic'in d)openExtra('exam-topic',null,d.eaddTopic);
+        else if('eeditTopic'in d)openExtra('exam-topic',d.eeditTopic);
+      });
+      qs('extraForm').addEventListener('submit',async e=>{
+        e.preventDefault();if(!pendingExtra)return;
+        const {kind,id,parentId}=pendingExtra,cfg=EXTRA_CONFIG[kind];
+        const title=qs('extraName').value.trim();qs('extraError').hidden=true;
+        if(!title||title.length>80){showError(new Error('Ad alanını 1-80 karakter arasında doldur.'),'extraError');return;}
+        const values={title};
+        const readInt=(field)=>{const raw=qs(field).value;if(raw.trim()==='')throw new Error('Tüm sayısal alanları doldur.');const n=Number(raw);if(!Number.isSafeInteger(n)||n<0||n>100000)throw new Error('Sayılar 0 ile 100.000 arasında tam sayı olmalı.');return n;};
+        try{
+          if(cfg.url){const raw=qs('extraUrl').value.trim(),url=validUrl(raw);if(raw&&!url)throw new Error('Geçerli bir HTTPS YouTube bağlantısı kullan.');values.playlist_url=url;}
+          if(cfg.questions){values.solved=readInt('extraQuestionSolved');}
+          if(cfg.date){values.exam_date=qs('extraDate').value;if(!/^\d{4}-\d{2}-\d{2}$/.test(values.exam_date)||Number.isNaN(new Date(values.exam_date+'T12:00:00').getTime()))throw new Error('Geçerli bir tarih seç.');}
+          if(cfg.score){values.correct=readInt('extraCorrect');values.wrong=readInt('extraWrong');values.blank=readInt('extraBlank');}
+          if(!id){if(kind==='question-topic')values.subject_id=parentId;
+            else if(kind==='exam-subject')values.exam_id=parentId;
+            else if(kind==='exam-topic')values.exam_subject_id=parentId;
+          }
+          if(!panelAvailable())return;
+          const b=qs('extraSave');b.disabled=true;
+          try{
+            await panelSave(cfg.table,values,id);
+            if(!id&&kind==='question-topic')expandedQuestions.add(parentId);
+            if(!id&&kind==='exam-subject')expandedExams.add(parentId);
+            if(!id&&kind==='exam-topic'){expandedExamSubjects.add(parentId);const sub=examSubjects.find(s=>s.id===parentId);if(sub)expandedExams.add(sub.exam_id);}
+            renderExtras();qs('extraDialog').close();pendingExtra=null;
+          }finally{b.disabled=false;}
+        }catch(error){showError(error,'extraError');}
+      });
+      qs('extraDelete').addEventListener('click',async()=>{
+        if(!pendingExtra?.id||!panelAvailable())return;
+        const {kind,id}=pendingExtra,cfg=EXTRA_CONFIG[kind];
+        if(!window.confirm('Bu kaydı ve bağlı alt kayıtları kalıcı olarak silmek istiyor musun?'))return;
+        const b=qs('extraDelete');b.disabled=true;qs('extraError').hidden=true;
+        try{await panelDelete(cfg.table,id);qs('extraDialog').close();pendingExtra=null;}
+        catch(error){showError(error,'extraError');}
+        finally{b.disabled=false;}
+      });
+      if(mode==='demo'){localExtraLoad();renderExtras();}
+      else {renderExtras();void refreshExtras();}
+      if(window.ResizeObserver){const ob=new ResizeObserver(()=>syncSlideHeight());document.querySelectorAll('.slide').forEach(el=>ob.observe(el));}
+      window.addEventListener('resize',syncSlideHeight);requestAnimationFrame(syncSlideHeight);
+      if(db){
+        // Postgres realtime açık olan kurulumlarda değişiklikler anında gelir.
+        const channel=db.channel('sekolata-ek-panolar');
+        for(const table of PANEL_TABLES)channel.on('postgres_changes',{event:'*',schema:'public',table},()=>void refreshExtras());
+        channel.subscribe();
+        document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshExtras();});
+        window.addEventListener('focus',()=>void refreshExtras());
+        setInterval(()=>{if(!document.hidden)void refreshExtras();},30000);
+      }
+
       render();
       void init();
     })();
