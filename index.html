@@ -280,16 +280,18 @@
     /* Üç kartlı mobil çalışma alanı: mevcut video kartının stiline dokunulmaz. */
     body { grid-template-columns:minmax(0,1fr); }
     .page { min-width:0; justify-self:center; }
-    .slide-viewport { position:relative; overflow:hidden; border-radius:27px; touch-action:pan-y; transition:height .38s ease; }
-    .slide-track { display:flex; width:100%; align-items:flex-start; transition:transform .58s cubic-bezier(.22,.84,.26,1); will-change:transform; }
+    /* Kaydırma panel dışından da başlar; dikey sayfa kaydırma serbest kalır. */
+    body { touch-action:pan-y; overscroll-behavior-x:none; }
+    button, a, .subject-head--toggle { -webkit-tap-highlight-color:transparent; }
+    @media (pointer:coarse) { button:disabled {pointer-events:none;} }
+    .slide-viewport { position:relative; overflow:hidden; border-radius:27px; touch-action:pan-y; transition:height .36s cubic-bezier(.2,.7,.25,1); }
+    .slide-track { display:flex; width:100%; align-items:flex-start; transition:transform .4s cubic-bezier(.22,.78,.22,1); will-change:transform; }
+    body.is-swiping { user-select:none; -webkit-user-select:none; }
+    body.is-swiping .slide-track { transition:none!important; }
     .slide { flex:0 0 100%; width:100%; min-width:0; }
     .slide .dashboard { width:100%; box-shadow:none; min-height:310px; }
     .slide-viewport { box-shadow:var(--shadow); }
-    .slide-viewport::after { content:'';position:absolute;z-index:6;left:50%;top:40%;width:14px;height:14px;
-      border-radius:40% 60% 58% 42%;background:rgba(178,214,205,.38);filter:blur(2px);
-      opacity:0;transform:translate(-50%,-50%) scale(0);pointer-events:none; }
-    .slide-viewport.is-dropping::after { animation:slide-drop .56s ease-out both; }
-    @keyframes slide-drop {0%{opacity:0;transform:translate(-50%,-50%) scale(0)} 22%{opacity:.95;transform:translate(-50%,-50%) scale(5)} 64%{opacity:.4;transform:translate(-50%,-50%) scale(45)}100%{opacity:0;transform:translate(-50%,-50%) scale(60)}}
+    /* Eski su damlası/tıklama parlaması kaldırıldı: kartlar doğrudan sürüklenir. */
     .slide-dots {display:flex;align-items:center;justify-content:center;gap:12px;margin:19px 0 7px;}
     .slide-dot {width:9px;height:9px;padding:0;border:none;border-radius:50%;background:#cad4ce;
       transition:width .34s,background .34s,transform .34s;}
@@ -343,7 +345,7 @@
     .field[hidden], .field-row[hidden]{display:none!important;}
     .panel-overview-badge {white-space:normal;text-align:center;}
     @media(max-width:600px){.slide-viewport{border-radius:22px}.slide .dashboard{padding:20px 14px 17px}.slide-dots{margin:16px 0 7px}.score-row{grid-template-columns:minmax(0,1fr) 25px 25px 25px 24px;gap:2px}.score-head{grid-template-columns:minmax(0,1fr) 25px 25px 25px 24px;gap:2px}}
-    @media(prefers-reduced-motion:reduce){.slide-track{transition:none!important}.slide-viewport.is-dropping::after{animation:none!important}}
+    @media(prefers-reduced-motion:reduce){.slide-track{transition:none!important}.slide-viewport{transition:none!important}}
   </style>
 </head>
 <body>
@@ -749,43 +751,93 @@
       const slideNames=['Soru çözme','Video çalışma panom','Deneme takibi'];
       const slideHeadings=['Soru çözme panom.','Video çalışma panom.','Deneme takip panom.'];
       const originalSubtitle=document.querySelector('.intro p').textContent;
-      let dropTimeout;
+      const slidePanels=[...document.querySelectorAll('.slide')];
+      const slideTrack=qs('slideTrack');
+      const slideViewport=qs('slideViewport');
+      let drag=null;
+      let suppressClickUntil=0;
       function syncSlideHeight(){
-        const panel=document.querySelectorAll('.slide')[activeSlide];
-        if(panel)qs('slideViewport').style.height=panel.offsetHeight+'px';
+        const panel=slidePanels[activeSlide];
+        if(panel && !drag?.horizontal) slideViewport.style.height=panel.offsetHeight+'px';
       }
-      function moveSlide(next) {
-        if (next<0 || next>2 || next===activeSlide) return;
+      function setTrackPosition(index){
+        slideTrack.style.transform=`translate3d(${-index*100}%,0,0)`;
+      }
+      function moveSlide(next){
+        next=Math.max(0,Math.min(2,next));
         activeSlide=next;
+        document.body.classList.remove('is-swiping');
+        setTrackPosition(activeSlide);
         syncSlideHeight();
-        qs('slideTrack').style.transform=`translateX(-${activeSlide*100}%)`;
         document.querySelectorAll('[data-slide-to]').forEach(dot=>dot.setAttribute('aria-current',String(Number(dot.dataset.slideTo)===activeSlide)));
-        document.querySelectorAll('.slide').forEach((el,index)=>{
-          const inactive=index!==activeSlide;el.setAttribute('aria-hidden',String(inactive));el.inert=inactive;
+        slidePanels.forEach((el,index)=>{
+          const inactive=index!==activeSlide;
+          el.setAttribute('aria-hidden',String(inactive));
+          el.inert=inactive;
         });
         document.querySelector('.intro h1').textContent=slideHeadings[activeSlide];
         document.querySelector('.intro p').textContent=activeSlide===1 ? originalSubtitle : (activeSlide===0 ? 'Her konu, bir adım daha.' : 'Her ay bir adım ileri.');
         qs('slideAnnouncer').textContent=slideNames[activeSlide];
-        const viewport=qs('slideViewport');
-        viewport.classList.remove('is-dropping');void viewport.offsetWidth;
-        viewport.classList.add('is-dropping');
-        clearTimeout(dropTimeout);dropTimeout=setTimeout(()=>viewport.classList.remove('is-dropping'),600);
       }
-      document.querySelectorAll('[data-slide-to]').forEach(b=>b.addEventListener('click',()=>moveSlide(Number(b.dataset.slideTo))));
-      let touchStart=null;
-      const touchZone=qs('slideViewport');
-      touchZone.addEventListener('touchstart',event=>{
-        if(event.touches.length!==1) return;
-        const t=event.touches[0];touchStart={x:t.clientX,y:t.clientY};
+      document.querySelectorAll('[data-slide-to]').forEach(button=>button.addEventListener('click',()=>moveSlide(Number(button.dataset.slideTo))));
+
+      // Her noktadan yatay, parmağı birebir takip eden sürükleme.
+      // Dikey sürükleme tarayıcının normal sayfa kaydırmasına bırakılır.
+      document.addEventListener('pointerdown',event=>{
+        if(drag || (event.pointerType==='mouse' && event.button!==0) ||
+           document.querySelector('dialog[open]') ||
+           event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+        drag={id:event.pointerId,x:event.clientX,y:event.clientY,
+          start:performance.now(),index:activeSlide,horizontal:false,vertical:false,
+          width:slideViewport.clientWidth};
       },{passive:true});
-      touchZone.addEventListener('touchend',event=>{
-        if(!touchStart || !event.changedTouches.length) return;
-        const t=event.changedTouches[0], dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;
-        touchStart=null;
-        // Fiziksel kaydırma yönü: parmak sağa -> soldaki Soru Çözme; sola -> sağdaki Denemeler.
-        if(Math.abs(dx)>=55 && Math.abs(dx)>Math.abs(dy)*1.25) moveSlide(activeSlide+(dx>0?-1:1));
-      },{passive:true});
-      touchZone.addEventListener('touchcancel',()=>touchStart=null);
+      document.addEventListener('pointermove',event=>{
+        if(!drag || event.pointerId!==drag.id) return;
+        const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+        if(!drag.horizontal && !drag.vertical){
+          if(Math.hypot(dx,dy)<9) return;
+          if(Math.abs(dx)>Math.abs(dy)*1.1){
+            drag.horizontal=true;
+            document.body.classList.add('is-swiping');
+            slideTrack.style.transition='none';
+          }else if(Math.abs(dy)>Math.abs(dx)*1.1){drag.vertical=true;return;}
+          else return;
+        }
+        if(!drag.horizontal) return;
+        if(event.cancelable) event.preventDefault();
+        // İlk ve son kartın ötesindeki hareket hafifçe dirençle sınırlandırılır.
+        const adjusted=(drag.index===0&&dx>0)||(drag.index===2&&dx<0) ? dx*.22:dx;
+        slideTrack.style.transform=`translate3d(${-drag.index*drag.width+adjusted}px,0,0)`;
+        const direction=adjusted>0?-1:1;
+        const neighbor=slidePanels[drag.index+direction];
+        const current=slidePanels[drag.index];
+        if(neighbor&&current){
+          const ratio=Math.min(1,Math.abs(adjusted)/Math.max(1,drag.width));
+          slideViewport.style.height=(current.offsetHeight+(neighbor.offsetHeight-current.offsetHeight)*ratio)+'px';
+        }
+      },{passive:false});
+      function finishDrag(event,cancelled=false){
+        if(!drag || (event && event.pointerId!==drag.id)) return;
+        const gesture=drag;
+        drag=null;
+        if(!gesture.horizontal) return;
+        const dx=cancelled?0:event.clientX-gesture.x;
+        const elapsed=Math.max(1,performance.now()-gesture.start);
+        const velocity=Math.abs(dx)/elapsed;
+        const enough=Math.abs(dx)>gesture.width*.23 || (Math.abs(dx)>35&&velocity>.55);
+        const next=enough?gesture.index+(dx>0?-1:1):gesture.index;
+        suppressClickUntil=performance.now()+450;
+        // Bir sonraki karede geçiş açılır; bırakılan konumdan yumuşakça oturur.
+        document.body.classList.remove('is-swiping');
+        slideTrack.style.transition='';
+        void slideTrack.offsetWidth; // Geçiş, sürüklemenin son konumundan başlasın.
+        moveSlide(next);
+      }
+      document.addEventListener('pointerup',event=>finishDrag(event));
+      document.addEventListener('pointercancel',event=>finishDrag(event,true));
+      document.addEventListener('click',event=>{
+        if(performance.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}
+      },true);
       const PANEL_TABLES=['question_subjects','question_topics','exam_sessions','exam_subjects','exam_topics'];
       const PANEL_LOCAL_KEY='sekolata-ek-panolar-v1';
       let qSubjects=[],qTopics=[],exams=[],examSubjects=[],examTopics=[];
