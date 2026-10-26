@@ -303,10 +303,10 @@
     .panel-error {font-size:12px;color:#a8564e;background:#fff1ee;border-radius:10px;padding:11px 13px;margin:10px 0;}
     .subject-head--toggle {cursor:pointer;}
     .subject-head--toggle:focus-visible{outline:3px solid #819ee3;outline-offset:4px;border-radius:10px;}
-    .expand-arrow {width:29px;height:29px;margin-left:3px;flex:0 0 29px;border-radius:10px;display:grid;place-items:center;background:#eef5ef;border:1px solid #e0eae0;color:#7c9b87;transition:background .2s,transform .2s;}
+    .expand-arrow {width:29px;height:29px;margin-left:3px;flex:0 0 29px;border-radius:10px;display:grid;place-items:center;background:#e5f1e7;border:1px solid #d3e6d7;color:#6c9479;transition:background .2s,transform .2s;}
     .expand-arrow svg {width:16px;height:16px;transition:transform .24s ease;}
     .is-expanded .expand-arrow svg {transform:rotate(180deg);}
-    .subject-head--toggle:hover .expand-arrow {background:#e2eee4;}
+    .subject-head--toggle:hover .expand-arrow {background:#d9ebdd;}
     .detail-expand {margin-top:14px;border-top:1px dashed #e7ece7;padding-top:11px;}
     .detail-head {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;padding:0 3px 7px;color:#9aa6a0;font:800 10px 'Nunito',sans-serif;}
     .detail-row {display:flex;justify-content:space-between;align-items:center;gap:7px;min-height:38px;padding:6px 8px;border-radius:9px;background:#fafbf9;margin-top:5px;border:1px solid #f0f1ec;}
@@ -320,10 +320,10 @@
     .detail-button:active {transform:scale(.99)}
     .detail-doodle {display:grid;place-items:center;width:25px;height:25px;border-radius:9px;background:#e0eee3;color:#578b6c;flex:0 0 25px;}
     .detail-doodle svg{width:16px;height:16px;}
-    .score-chevron{display:inline-block;vertical-align:-3px;width:16px;height:16px;margin-right:5px;padding:2px;background:#e9f3eb;color:#7a9e85;border-radius:6px;transition:transform .2s;}
+    .score-chevron{display:inline-block;vertical-align:-3px;width:16px;height:16px;margin-right:5px;padding:2px;background:#e0efe3;color:#70997c;border-radius:6px;transition:transform .2s;}
     .exam-subject-row.is-expanded .score-chevron {transform:rotate(180deg);}
-    .question-share-note{color:#a0aaa4;font:700 10px/1.4 'Nunito',sans-serif;margin-top:-6px;margin-bottom:9px;}
     .subject-bottom--expanded{margin-top:12px;}
+    .exam-actions-only{justify-content:flex-end;}
     .section-caption {font-size:11px;color:#9da5a6;}
     .score-head{display:grid;grid-template-columns:minmax(0,1fr) 28px 28px 28px 27px;gap:3px;color:#a0aaa4;font:900 10px 'Nunito',sans-serif;padding:0 5px 5px;}
     .score-head>span:not(:first-child){text-align:center}
@@ -363,9 +363,9 @@
     <div class="slide-viewport" id="slideViewport" aria-label="Çalışma panoları">
       <div class="slide-track" id="slideTrack" style="transform:translateX(-100%)">
         <div class="slide" data-slide="question" aria-hidden="true" inert>    <section class="dashboard" aria-label="Soru çözme takip paneli">
-      <div class="dashboard-top"><div><div class="overview-title">Soru Çözme</div><div class="overview-caption" id="questionOverview">Konuları ve soruları takip et</div></div>
+      <div class="dashboard-top"><div><div class="overview-title">Soru Takibi</div></div>
         <div class="overview-right"><span class="overall-percent" id="questionPercent">%0</span><span class="overall-badge panel-overview-badge" id="questionBadge">0 soru çözüldü</span></div></div>
-      <div class="subjects-heading"><h2>Dersler</h2><span id="questionSubjectTotal">0 ders ✳</span></div>
+      <div class="subjects-heading"><h2>Dersler</h2></div>
       <div id="questionList" aria-live="polite"></div>
       <button class="new-subject" type="button" id="addQuestionSubject"><span class="new-subject-icon" aria-hidden="true">+</span><span>Ders ekle</span></button>
       <div class="subpanel-footer">Sekolata</div>
@@ -399,9 +399,9 @@
       </div>
     </section></div>
         <div class="slide" data-slide="exam" aria-hidden="true" inert>    <section class="dashboard" aria-label="Aylık deneme takip paneli">
-      <div class="dashboard-top"><div><div class="overview-title">Deneme Takibi</div><div class="overview-caption" id="examOverview">Denemelerin aylık özeti</div></div>
+      <div class="dashboard-top"><div><div class="overview-title">Deneme Takibi</div></div>
         <div class="overview-right"><span class="overall-percent" id="examTotal">0</span><span class="overall-badge panel-overview-badge" id="examBadge">deneme</span></div></div>
-      <div class="subjects-heading"><h2>Aylık denemeler</h2><span id="examStats">0 kayıt ✳</span></div>
+      <div class="subjects-heading"><h2>Aylık denemeler</h2></div>
       <div id="examList" aria-live="polite"></div>
       <button class="new-subject" type="button" id="addExam"><span class="new-subject-icon" aria-hidden="true">+</span><span>Deneme ekle</span></button>
       <div class="subpanel-footer">Sekolata</div>
@@ -776,7 +776,7 @@
           el.inert=inactive;
         });
         document.querySelector('.intro h1').textContent=slideHeadings[activeSlide];
-        document.querySelector('.intro p').textContent=activeSlide===1 ? originalSubtitle : (activeSlide===0 ? 'Her konu, bir adım daha.' : 'Her ay bir adım ileri.');
+        document.querySelector('.intro p').textContent=activeSlide===1 ? originalSubtitle : (activeSlide===0 ? 'soru çözen bal olsaymış' : 'üs üs');
         qs('slideAnnouncer').textContent=slideNames[activeSlide];
       }
       document.querySelectorAll('[data-slide-to]').forEach(button=>button.addEventListener('click',()=>moveSlide(Number(button.dataset.slideTo))));
@@ -896,7 +896,6 @@
       const smallFoldDoodle=`<svg class="score-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
       function renderQuestions(){
         const grandSolved=qTopics.reduce((sum,t)=>sum+t.solved,0);
-        const grandTopics=qTopics.length;
         const html=qSubjects.map((s,i)=>{
           const topics=qTopics.filter(t=>t.subject_id===s.id);
           const solved=topics.reduce((sum,t)=>sum+t.solved,0);
@@ -914,7 +913,6 @@
                 <div class="subject-labels"><h3>${safeText(s.title)}</h3><p>${topics.length} konu</p></div>
                 <div class="subject-count"><strong>${solved}</strong><small>soru çözüldü</small></div>${foldDoodle}</div>
               ${percentBar(share,`${s.title}: çözülen sorular içindeki payı %${share}`)}
-              <div class="question-share-note">Toplam çözümün %${share}’i</div>
               <div class="subject-bottom"><a class="list-link" href="${safeText(s.playlist_url||'#')}" data-question-link="${safeText(s.id)}" ${s.playlist_url?'target="_blank" rel="noopener noreferrer"':''}>${s.playlist_url?'Oynatma listesini aç':'Oynatma listesi ekle'} →</a>
                 <button class="icon-button" data-qedit-subject="${safeText(s.id)}" aria-label="${safeText(s.title)} dersini düzenle">✎</button></div>
               <div class="detail-expand" ${expanded?'':'hidden'}><div class="detail-head"><span>Konu</span><span>Çözülen soru</span></div>
@@ -925,8 +923,6 @@
         qs('questionList').innerHTML=extrasError?`<p class="panel-error">${safeText(extrasError)}</p>`:(html||'<div class="panel-empty">Henüz ders yok. Ders ekleyerek başlayabilirsin.</div>');
         qs('questionPercent').textContent=String(grandSolved);
         qs('questionBadge').textContent='soru çözüldü';
-        qs('questionOverview').textContent=grandTopics?`${grandTopics} konuda · ${qSubjects.length} ders`:'Çözmeye başlamak için ders ve konu ekle';
-        qs('questionSubjectTotal').textContent=`${qSubjects.length} ders ✳`;
         qs('addQuestionSubject').disabled=!extrasReady;
       }
       const scoreHead=()=>'<div class="score-head"><span>Ders / konu</span><span>D</span><span>Y</span><span>B</span><span></span></div>';
@@ -959,17 +955,14 @@
              <div class="subject-labels"><h3>${safeText(e.title)}</h3><p>${safeText(new Intl.DateTimeFormat('tr-TR',{day:'numeric',month:'long'}).format(new Date(e.exam_date+'T12:00:00')))} · ${subs.length} ders</p></div>
              <div class="subject-count"><strong>${score.correct} D</strong><small>${score.wrong} Y · ${score.blank} B</small></div>${foldDoodle}</div>
             ${percentBar(score.correct+score.wrong+score.blank?Math.round(score.correct/(score.correct+score.wrong+score.blank)*100):0,`${e.title} doğru cevap oranı`)}
-            <div class="subject-bottom"><span class="section-caption">Doğru · Yanlış · Boş</span><button class="icon-button" aria-label="Denemeyi düzenle" data-eedit-exam="${safeText(e.id)}">✎</button></div>
+            <div class="subject-bottom exam-actions-only"><button class="icon-button" aria-label="Denemeyi düzenle" data-eedit-exam="${safeText(e.id)}">✎</button></div>
             <div class="detail-expand" ${expanded?'':'hidden'}>${scoreHead()}${subHtml||'<div class="panel-note">Henüz ders eklenmedi.</div>'}
               <button class="detail-button" data-eadd-subject="${safeText(e.id)}">${addDoodle}<span>Ders ekle</span></button>
             </div></article>`;
         }
         qs('examList').innerHTML=extrasError?`<p class="panel-error">${safeText(extrasError)}</p>`:html||'<div class="panel-empty">Henüz deneme kaydı yok. İlk denemeni ekleyebilirsin.</div>';
-        const totals=totalScore(exams.map(scoreForExam));
         qs('examTotal').textContent=String(exams.length);
         qs('examBadge').textContent='deneme';
-        qs('examOverview').textContent=`${totals.correct} doğru · ${totals.wrong} yanlış · ${totals.blank} boş`;
-        qs('examStats').textContent=`${exams.length} kayıt ✳`;
         qs('addExam').disabled=!extrasReady;
       }
       function renderExtras(){renderQuestions();renderExams();}
