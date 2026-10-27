@@ -844,6 +844,7 @@
             if (error) throw error;
             if (!data?.length) throw new Error('Değişiklik yetkisi bulunamadı. SQL politikasını kontrol et.');
             await refreshShared();
+            refreshDailyAfterWrite();
           }
           qs('editDialog').close(); render();
         } catch(e) {showError(e);} finally {button.disabled = false;}
@@ -861,6 +862,7 @@
             if (error) throw error;
             if (!data?.length) throw new Error('Ders silinemedi. Yönetici yetkisini kontrol et.');
             await refreshShared();
+            refreshDailyAfterWrite();
           }
           qs('editDialog').close(); render();
         } catch(e) {showError(e);} finally {qs('deleteSubject').disabled = false;}
