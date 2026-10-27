@@ -425,6 +425,9 @@
     .summary-details li small { display:block; color:var(--muted); font-size:11px; }
     .summary-details li strong { flex-shrink:0; color:#638d70; font-variant-numeric:tabular-nums; }
     .summary-details p { font-size:12px; color:var(--muted); }
+    .summary-collapse { display:flex; align-items:center; justify-content:center; width:44px; height:32px; margin:10px auto 0; padding:0; border:1px solid #e4e0ee; border-radius:999px; color:#8c81a3; background:#f5f1fa; }
+    .summary-collapse:hover { background:#eae3f3; border-color:#cfc2e2; }
+    .summary-collapse svg { width:18px; height:18px; }
   </style>
   <!-- Seko Kontrol: Chrome/Android kurulum ve tarayıcı sekmesi simgeleri -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -483,6 +486,7 @@
       </div>
       <div class="summary-details" id="periodDetails" aria-live="polite" hidden></div>
       <p class="today-status" id="periodStatus" role="status" hidden></p>
+      <button class="summary-collapse" id="periodCollapse" type="button" aria-label="Özetler kartını kapat" aria-controls="periodPanel" title="Özetleri yukarı topla"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 14 5-5 5 5"/></svg></button>
     </section>
 
     <!-- Her üç panoda ortak: günlük sayaç, yalnızca açıldığında görünür. -->
@@ -1342,6 +1346,11 @@
         const open=qs('periodPanel').hidden;
         qs('periodPanel').hidden=!open;qs('periodToggle').setAttribute('aria-expanded',String(open));
         if(open)void refreshSummary('period');
+      });
+      qs('periodCollapse').addEventListener('click',()=>{
+        qs('periodPanel').hidden=true;
+        qs('periodToggle').setAttribute('aria-expanded','false');
+        qs('periodToggle').focus({preventScroll:true});
       });
       document.querySelectorAll('[data-days]').forEach(button=>button.addEventListener('click',()=>{
         summaries.period.days=Number(button.dataset.days);
