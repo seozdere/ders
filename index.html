@@ -428,6 +428,18 @@
     .summary-collapse { display:flex; align-items:center; justify-content:center; width:44px; height:32px; margin:10px auto 0; padding:0; border:1px solid #e4e0ee; border-radius:999px; color:#8c81a3; background:#f5f1fa; }
     .summary-collapse:hover { background:#eae3f3; border-color:#cfc2e2; }
     .summary-collapse svg { width:18px; height:18px; }
+    .question-count-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+    .question-count-fields .field { min-width:0; }
+    .question-count-fields input { padding-inline:9px; }
+    .question-count-fields .field > span { font-size:11px; }
+    .question-count-note { display:block; margin-top:3px; color:#85918b; font:700 10px/1.4 'Nunito',sans-serif; }
+    .question-add-count { width:43px; height:28px; min-width:0; padding:3px 5px; border:1px solid #dbe6d9; border-radius:8px; background:#f2f7ee; color:#5e7b6e; text-align:center; font:800 12px/1.2 'Nunito',sans-serif; font-variant-numeric:tabular-nums; }
+    .question-add-count::placeholder { color:#a0afa3; }
+    .question-add-count:disabled { opacity:.5; }
+    @media(max-width:420px){ #questionList .detail-row { flex-wrap:wrap; } #questionList .detail-name { flex:1 1 calc(100% - 55px); } #questionList .question-quick-actions { margin-left:auto; } }
+    /* Reserve one status line to prevent the cards jumping after loading. */
+    #todayStatus, #periodStatus { min-height:17px; }
+    #todayStatus[hidden], #periodStatus[hidden] { display:block!important; visibility:hidden; }
   </style>
   <!-- Seko Kontrol: Chrome/Android kurulum ve tarayıcı sekmesi simgeleri -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -478,7 +490,7 @@
         <button type="button" data-days="30" aria-pressed="false">Aylık</button>
         <button type="button" data-days="90" aria-pressed="false">Üç aylık</button>
       </div>
-      <p class="summary-range" id="periodRange">Son 7 gün</p>
+      <p class="summary-range" id="periodRange">Bu hafta</p>
       <div class="today-grid">
         <button type="button" class="today-stat today-stat--questions" data-summary="period" data-kind="question" aria-expanded="false" aria-controls="periodDetails"><strong id="period-question">—</strong><span>Soru çözüldü</span></button>
         <button type="button" class="today-stat today-stat--videos" data-summary="period" data-kind="video" aria-expanded="false" aria-controls="periodDetails"><strong id="period-video">—</strong><span>Video izlendi</span></button>
@@ -583,8 +595,9 @@
         <label class="field"><span>İzlenen video</span><input id="doneInput" type="number" inputmode="numeric" min="0" max="100000" step="1" required></label>
       </div>
       <label class="field"><span>YouTube oynatma listesi</span><input id="urlInput" type="url" inputmode="url" maxlength="2048" autocomplete="off" placeholder="https://www.youtube.com/playlist?list=..."><small class="field-help">İstersen bu alanı boş bırakabilirsin.</small></label>
+      <label class="field"><span>Sayaç işlemi</span><select id="videoActivityMode"><option value="work">Bugünkü çalışma / geri ekleme</option><option value="history">Geçmiş kayıt / düzeltme</option><option value="fresh" id="videoFreshOption">Bağımsız yeni çalışma</option></select><small class="field-help">Yeni dersin başlangıç sayısı bugüne eklenir. Aynı adla silinen ders geri eklenirse geçmiş kısmı tekrar sayılmaz. Farklı bir çalışma için “Bağımsız yeni çalışma” seç.</small></label>
       <p class="form-error" id="formError" role="alert" hidden></p>
-      <div class="dialog-actions split-actions"><button type="button" class="delete-button" id="deleteSubject" hidden>Dersi sil</button><div class="dialog-action-right"><button type="button" class="cancel-button" data-close="editDialog">Vazgeç</button><button type="submit" class="save-button" id="saveSubject">Kaydet</button></div></div>
+      <div class="dialog-actions split-actions"><button type="button" class="delete-button" id="deleteSubject" hidden>Dersi sil</button><div class="dialog-action-right"><button type="submit" class="save-button" id="saveSubject">Kaydet</button></div></div>
     </form>
   </dialog>
   <dialog class="edit-dialog auth-dialog" id="authDialog" aria-labelledby="authTitle">
@@ -603,12 +616,20 @@
       <label class="field" id="extraExamTypeField" hidden><span>Deneme türü</span><select id="extraExamType" aria-label="Deneme türü"><option value="ags">AGS Denemeleri</option><option value="oabt">ÖABT Denemeleri</option></select></label>
       <label class="field" id="extraDateField" hidden><span>Deneme tarihi</span><input id="extraDate" type="date" required></label>
       <label class="field" id="extraUrlField" hidden><span>YouTube oynatma listesi</span><input id="extraUrl" type="url" maxlength="2048" placeholder="https://www.youtube.com/playlist?list=..."></label>
-      <div id="extraQuestionFields" hidden><label class="field"><span>Çözülen soru</span><input id="extraQuestionSolved" type="number" min="0" max="100000" step="1" inputmode="numeric"></label></div>
+      <div id="extraQuestionFields" hidden>
+        <div class="question-count-fields">
+          <label class="field"><span>Çözülen soru</span><input id="extraQuestionSolved" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+          <label class="field"><span>Doğru</span><input id="extraQuestionCorrect" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+          <label class="field"><span>Yanlış</span><input id="extraQuestionWrong" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+        </div>
+        <small class="field-help">Doğru ve yanlış, çözülen toplamın içindedir. Sayaçlar yalnızca çözülen soru sayısını kullanır.</small>
+      </div>
       <div class="field-row" id="extraScoreFields" hidden><label class="field"><span>Doğru</span><input id="extraCorrect" type="number" min="0" max="100000" step="1" inputmode="numeric"></label><label class="field"><span>Yanlış</span><input id="extraWrong" type="number" min="0" max="100000" step="1" inputmode="numeric"></label></div>
       <label class="field" id="extraBlankField" hidden><span>Boş</span><input id="extraBlank" type="number" min="0" max="100000" step="1" inputmode="numeric"></label>
+      <label class="field" id="extraActivityField" hidden><span>Sayaç işlemi</span><select id="extraActivityMode"><option value="work">Bugünkü çalışma / geri ekleme</option><option value="history">Geçmiş kayıt / düzeltme</option><option value="fresh" id="extraFreshOption">Bağımsız yeni çalışma</option></select><small class="field-help">Aynı ders ve konu adıyla silinen kayıt geri eklenirse geçmiş kısmı tekrar sayılmaz. Önceden çözülen soruları aktarırken “Geçmiş kayıt” seç.</small></label>
       <p class="field-help" id="extraHelp" style="margin-top:12px"></p>
       <p class="form-error" id="extraError" role="alert" hidden></p>
-      <div class="dialog-actions split-actions"><button type="button" class="delete-button" id="extraDelete" hidden>Sil</button><div class="dialog-action-right"><button type="button" class="cancel-button" data-close="extraDialog">Vazgeç</button><button type="submit" class="save-button" id="extraSave">Kaydet</button></div></div>
+      <div class="dialog-actions split-actions"><button type="button" class="delete-button" id="extraDelete" hidden>Sil</button><div class="dialog-action-right"><button type="submit" class="save-button" id="extraSave">Kaydet</button></div></div>
     </form>
   </dialog>
   <!-- Supabase yapılandırılmışsa kütüphane kullanılır; demo modu bağımsızdır. -->
@@ -651,7 +672,7 @@
       const normalize = d => ({
         id: String(d.id), title: String(d.title || 'Yeni ders').slice(0,60),
         total: integer(d.total), done: Math.min(integer(d.done), integer(d.total)),
-        playlist_url: validUrl(d.playlist_url || d.url || ''), sort_order: Number(d.sort_order)||0
+        playlist_url: validUrl(d.playlist_url || d.url || ''), sort_order: Number(d.sort_order)||0, revision:d.revision??null
       });
       const configured = Boolean(SUPABASE_URL.trim() && SUPABASE_PUBLISHABLE_KEY.trim());
       const mode = configured ? (window.supabase?.createClient ? 'shared' : 'broken') : 'demo';
@@ -662,7 +683,7 @@
       let session = null;
       let loaded = mode === 'demo';
       let connectionError = '';
-      let editorId = null;
+      let editorId = null, editorRevision = null, videoSaving = false, sharedRequest = 0;
       const busy = new Set();
 
       function isEditor() { return mode === 'demo' || (mode === 'shared' && !!session?.user); }
@@ -758,10 +779,13 @@
         return false;
       }
       function openEditor(id=null) {
-        if (!requireEditor()) return;
+        if (!requireEditor() || videoSaving) return;
         editorId = id;
         const item = id === null ? null : subjects.find(s => s.id === id);
         if (id !== null && !item) return;
+        editorRevision = item?.revision ?? null;
+        qs('videoActivityMode').value='work';
+        qs('videoFreshOption').hidden=!!item;
         qs('dialogTitle').textContent = item ? `${item.title} listesi` : 'Yeni ders ekle';
         qs('nameInput').value = item?.title || '';
         qs('totalInput').value = String(item?.total ?? 0);
@@ -777,14 +801,30 @@
         el.textContent = (err && typeof err.message === 'string' ? err.message : String(err || 'İşlem başarısız.'));
         el.hidden = false;
       }
+      function dataError(error){
+        if(['PGRST202','42883','42P01','42703'].includes(error?.code))return new Error('Önce supabase-sayac-v2.sql dosyasının tamamını çalıştır, ardından sayfayı yenile.');
+        if(error?.code==='40001')return new Error('Kayıt başka bir yerde değişti veya silindi. Liste yenilendi; düzenleme penceresini kapatıp yeniden aç.');
+        return error || new Error('İşlem tamamlanamadı.');
+      }
+      async function panelSnapshot(panel){
+        const {data,error}=await db.rpc('sekolata_panel_snapshot',{p_panel:panel});
+        if(error)throw dataError(error);
+        if(data?.schema_version!==2)throw new Error('Sayaç güncellemesi eksik. supabase-sayac-v2.sql dosyasını çalıştır.');
+        const tables=panel==='video'?['video_subjects']:PANEL_TABLES;
+        if(!tables.every(table=>Array.isArray(data[table])&&data[table].every(row=>row.id!=null&&row.revision!=null)))throw new Error('Liste yanıtı eksik; mevcut veriler korundu.');
+        return data;
+      }
       async function refreshShared() {
         if (!db) return;
-        const {data,error} = await db.from('video_subjects').select('id,title,total,done,playlist_url,sort_order').order('sort_order',{ascending:true}).order('created_at',{ascending:true});
-        if (error) { connectionError = 'Ortak veriler okunamadı. Bağlantıyı ve SQL ayarlarını kontrol et.'; updateStatus(); return; }
-        connectionError = '';
-        subjects = (data || []).map(normalize);
-        loaded = true;
-        render();
+        const request=++sharedRequest;
+        try{
+          const data=await panelSnapshot('video');
+          if(request!==sharedRequest)return;
+          connectionError='';subjects=data.video_subjects.map(normalize);loaded=true;render();
+        }catch(error){
+          if(request!==sharedRequest)return;
+          connectionError=error.message||'Ortak veriler okunamadı.';updateStatus();
+        }
       }
       async function changeProgress(id, delta) {
         if (!requireEditor() || busy.has(id)) return;
@@ -793,12 +833,12 @@
         if (mode === 'demo') { item.done += delta; saveDemo(); render(); return; }
         busy.add(id); render();
         try {
-          const {data,error} = await db.rpc('change_video_progress',{p_id:id,p_delta:delta});
+          const {data,error} = await db.rpc('sekolata_change_video_progress',{p_id:id,p_delta:delta,p_revision:item.revision});
           if (error) throw error;
           if (!data?.length) throw new Error('Değişiklik kaydedilemedi. Yönetici yetkisini kontrol et.');
           await refreshShared();
           refreshDailyAfterWrite();
-        } catch (e) { window.alert('Video güncellenemedi: '+e.message); }
+        } catch (e) { if(e.code==='40001')await refreshShared();window.alert('Video güncellenemedi: '+dataError(e).message); }
         finally { busy.delete(id); render(); }
       }
       qs('subjectList').addEventListener('click', event => {
@@ -818,6 +858,7 @@
       qs('newSubject').addEventListener('click', () => openEditor());
       qs('editForm').addEventListener('submit', async event => {
         event.preventDefault();
+        if(videoSaving)return;
         const title = qs('nameInput').value.trim();
         const total = Number(qs('totalInput').value);
         const done = Number(qs('doneInput').value);
@@ -830,7 +871,7 @@
         if (urlRaw && !url) return showError('Yalnızca geçerli HTTPS YouTube bağlantısı girilebilir.');
         if (urlRaw.length > 2048) return showError('Bağlantı çok uzun.');
         const button = qs('saveSubject');
-        button.disabled = true;
+        videoSaving=true;button.disabled = true;
         try {
           if (mode === 'demo') {
             if (editorId) Object.assign(subjects.find(s => s.id === editorId), {title,total,done,playlist_url:url});
@@ -839,36 +880,45 @@
           } else {
             if (!requireEditor()) return;
             const payload = {title,total,done,playlist_url:url};
-            const query = editorId ? db.from('video_subjects').update(payload).eq('id', editorId) : db.from('video_subjects').insert({...payload,sort_order:Math.max(-1,...subjects.map(s=>s.sort_order))+1});
-            const {data,error} = await query.select('id');
+            if(!editorId)payload.sort_order=subjects.reduce((max,s)=>Math.max(max,s.sort_order),-1)+1;
+            const {data,error}=await db.rpc('sekolata_save_record',{p_table:'video_subjects',p_id:editorId,p_revision:editorRevision,p_values:payload,p_mode:qs('videoActivityMode').value});
             if (error) throw error;
-            if (!data?.length) throw new Error('Değişiklik yetkisi bulunamadı. SQL politikasını kontrol et.');
+            if (!data?.id) throw new Error('Değişiklik kaydedilemedi.');
             await refreshShared();
             refreshDailyAfterWrite();
           }
           qs('editDialog').close(); render();
-        } catch(e) {showError(e);} finally {button.disabled = false;}
+        } catch(e) {if(e.code==='40001')await refreshShared();showError(dataError(e));} finally {videoSaving=false;button.disabled = false;}
       });
       qs('deleteSubject').addEventListener('click', async () => {
-        if (!editorId || !requireEditor()) return;
+        if (!editorId || !requireEditor() || videoSaving) return;
         const item = subjects.find(s => s.id === editorId);
         if (!item || !window.confirm(`“${item.title}” dersini ve ilerlemesini kalıcı olarak silmek istiyor musun?`)) return;
         qs('formError').hidden = true;
-        qs('deleteSubject').disabled = true;
+        videoSaving=true;qs('deleteSubject').disabled = true;
         try {
           if (mode === 'demo') { subjects = subjects.filter(s => s.id !== editorId); saveDemo(); }
           else {
-            const {data,error} = await db.from('video_subjects').delete().eq('id',editorId).select('id');
+            const {data,error} = await db.rpc('sekolata_delete_record',{p_table:'video_subjects',p_id:editorId,p_revision:editorRevision});
             if (error) throw error;
-            if (!data?.length) throw new Error('Ders silinemedi. Yönetici yetkisini kontrol et.');
+            if (!data?.id) throw new Error('Ders silinemedi. Yönetici yetkisini kontrol et.');
             await refreshShared();
             refreshDailyAfterWrite();
           }
           qs('editDialog').close(); render();
-        } catch(e) {showError(e);} finally {qs('deleteSubject').disabled = false;}
+        } catch(e) {if(e.code==='40001')await refreshShared();showError(dataError(e));} finally {videoSaving=false;qs('deleteSubject').disabled = false;}
       });
-      for (const close of document.querySelectorAll('[data-close]')) close.addEventListener('click', () => qs(close.dataset.close).close());
-      for (const dlg of document.querySelectorAll('dialog')) dlg.addEventListener('click', e => {if (e.target===dlg) dlg.close();});
+      for (const close of document.querySelectorAll('[data-close]')) close.addEventListener('click', () => {
+        if((close.dataset.close==='editDialog'&&videoSaving)||(close.dataset.close==='extraDialog'&&extraSaving))return;
+        qs(close.dataset.close).close();
+      });
+      for (const dlg of document.querySelectorAll('dialog')) {
+        if(dlg.id==='editDialog'||dlg.id==='extraDialog'){
+          dlg.addEventListener('cancel',event=>event.preventDefault());
+        }else{
+          dlg.addEventListener('click',event=>{if(event.target===dlg)dlg.close();});
+        }
+      }
       qs('authButton').addEventListener('click', async () => {
         if (!db) return;
         if (session?.user) { await db.auth.signOut(); session = null; render(); }
@@ -1000,7 +1050,8 @@
       const PANEL_TABLES=['question_subjects','question_topics','exam_sessions','exam_subjects','exam_topics'];
       const PANEL_LOCAL_KEY='sekolata-ek-panolar-v1';
       let qSubjects=[],qTopics=[],exams=[],examSubjects=[],examTopics=[];
-      let extrasReady=mode==='demo',extrasError='',pendingExtra=null;
+      let extrasReady=mode==='demo',extrasError='',pendingExtra=null,extraSaving=false,extrasRequest=0;
+      const questionAddDrafts=new Map(),questionPending=new Set();
       const expandedQuestions=new Set(), expandedExams=new Set(),expandedExamSubjects=new Set();
       const expandedExamGroups=new Set();
       const EXAM_GROUPS=[{id:'ags',title:'AGS Denemeleri',css:'exam-group--ags'},
@@ -1017,31 +1068,46 @@
       async function refreshExtras(){
         if(mode==='demo'){localExtraLoad();extrasReady=true;renderExtras();return;}
         if(!db){extrasError='Supabase bağlantısı kurulamadı.';renderExtras();return;}
+        const request=++extrasRequest;
         try{
-          const responses=await Promise.all(PANEL_TABLES.map(table=>db.from(table).select('*').order('created_at',{ascending:true})));
-          const error=responses.find(r=>r.error)?.error;
-          if(error) throw error;
-          [qSubjects,qTopics,exams,examSubjects,examTopics]=responses.map(r=>(r.data||[]).map(normalizeExtra));
+          const data=await panelSnapshot('extras');
+          if(request!==extrasRequest)return;
+          [qSubjects,qTopics,exams,examSubjects,examTopics]=PANEL_TABLES.map(table=>data[table].map(normalizeExtra));
           extrasReady=true;extrasError='';renderExtras();
-        }catch(e){extrasReady=false;extrasError='Yeni panolar için supabase-ek-panolar.sql dosyasını SQL Editor’da çalıştırmalısın.';renderExtras();}
+        }catch(e){
+          if(request!==extrasRequest)return;
+          extrasError=e.message||'Panel verileri okunamadı. Bağlantını kontrol et.';renderExtras();
+        }
       }
-      async function panelSave(table,values,id=null){
+      function validateQuestionCounts(solved,correct,wrong){
+        if(![solved,correct,wrong].every(n=>Number.isSafeInteger(n)&&n>=0&&n<=100000))
+          throw new Error('Sayılar 0 ile 100.000 arasında tam sayı olmalı.');
+        if(correct+wrong>solved)throw new Error('Doğru ve yanlış toplamı, çözülen soru sayısını aşamaz.');
+      }
+      async function panelSave(table,values,id=null,expectedRevision=null,activityMode='work'){
+        if(table==='question_topics'){
+          const current=id?qTopics.find(item=>item.id===id):null;
+          validateQuestionCounts(values.solved??current?.solved??0,
+            values.correct??current?.correct??0,values.wrong??current?.wrong??0);
+        }
         if(mode==='demo'){
           const arr=({question_subjects:qSubjects,question_topics:qTopics,exam_sessions:exams,exam_subjects:examSubjects,exam_topics:examTopics})[table];
           if(id){const r=arr.find(x=>x.id===id);if(!r) throw new Error('Kayıt bulunamadı.');Object.assign(r,values);}
           else {arr.push({id:newId(),created_at:new Date().toISOString(),...values});}
           localExtraSave();renderExtras();return;
         }
-        const {data,error}=await(id?db.from(table).update(values).eq('id',id):db.from(table).insert(values)).select('id');
-        if(error) throw error;
-        if(!data?.length)throw new Error('Değişiklik yetkisi bulunamadı. SQL politikalarını kontrol et.');
+        const {data,error}=await db.rpc('sekolata_save_record',{
+          p_table:table,p_id:id,p_revision:expectedRevision,p_values:values,p_mode:activityMode
+        });
+        if(error){if(error.code==='40001')await refreshExtras();throw dataError(error);}
+        if(!data?.id)throw new Error('Değişiklik kaydedilemedi.');
         await refreshExtras();
         // Günlük SQL tetikleyicisi değişim farkını kaydeder. Kalemle doğrudan sayı
         // yazıldığında da (+ / − düğmelerinde olduğu gibi) özeti hemen tazele.
         // Sayacı istemcide artırma: ortak veritabanı tek doğruluk kaynağıdır.
         refreshDailyAfterWrite();
       }
-      async function panelDelete(table,id){
+      async function panelDelete(table,id,revision){
         if(mode==='demo'){
           if(table==='question_subjects'){qSubjects=qSubjects.filter(r=>r.id!==id);qTopics=qTopics.filter(r=>r.subject_id!==id);}
           if(table==='question_topics')qTopics=qTopics.filter(r=>r.id!==id);
@@ -1050,8 +1116,8 @@
           if(table==='exam_topics')examTopics=examTopics.filter(r=>r.id!==id);
           localExtraSave();renderExtras();return;
         }
-        const {data,error}=await db.from(table).delete().eq('id',id).select('id');
-        if(error)throw error;if(!data?.length)throw new Error('Silme yetkisi bulunamadı.');
+        const {data,error}=await db.rpc('sekolata_delete_record',{p_table:table,p_id:id,p_revision:revision});
+        if(error){if(error.code==='40001')await refreshExtras();throw dataError(error);}if(!data?.id)throw new Error('Kayıt silinemedi.');
         await refreshExtras();
         refreshDailyAfterWrite();
       }
@@ -1063,6 +1129,9 @@
       const foldDoodle=`<span class="expand-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>`;
       const smallFoldDoodle=`<svg class="score-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
       function renderQuestions(){
+        const focused=document.activeElement;
+        const focusId=focused?.dataset?.qamount;
+        const selection=focusId?[focused.selectionStart,focused.selectionEnd]:null;
         const grandSolved=qTopics.reduce((sum,t)=>sum+t.solved,0);
         const html=qSubjects.map((s,i)=>{
           const topics=qTopics.filter(t=>t.subject_id===s.id);
@@ -1070,12 +1139,13 @@
           const expanded=expandedQuestions.has(s.id);
           // Hedef soru sayısı yok: çubuk, toplam çözülen sorulardaki payı gösterir; tamamlanma yüzdesi değildir.
           const share=grandSolved?Math.round(100*solved/grandSolved):0;
-          const topicHtml=topics.map(t=>`<div class="detail-row"><span class="detail-name">${safeText(t.title)}</span>
+          const topicHtml=topics.map(t=>`<div class="detail-row"><span class="detail-name">${safeText(t.title)}<small class="question-count-note">${num(t.correct)} doğru · ${num(t.wrong)} yanlış</small></span>
              <span class="detail-values" aria-label="${safeText(t.title)}: ${t.solved} soru çözüldü">${t.solved}</span>
              <div class="question-quick-actions">
-               <button class="detail-edit" type="button" data-qedit-topic="${safeText(t.id)}" aria-label="${safeText(t.title)} konusunu düzenle" title="Konuyu düzenle">✎</button>
-               <button class="detail-mini plus" type="button" data-qplus="${safeText(t.id)}" aria-label="${safeText(t.title)} bir soru ekle" title="Bir çözülen soru ekle" ${t.solved>=100000?'disabled':''}>+</button>
-               <button class="detail-mini minus" type="button" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} bir soru geri al" title="Bir çözülen soruyu geri al" ${!t.solved?'disabled':''}>−</button>
+               <button class="detail-edit" type="button" data-qedit-topic="${safeText(t.id)}" aria-label="${safeText(t.title)} konusunu düzenle" title="Konuyu düzenle" ${questionPending.has(t.id)?'disabled':''}>✎</button>
+               <input class="question-add-count" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" value="${safeText(questionAddDrafts.get(t.id)||'')}" placeholder="1" aria-label="${safeText(t.title)} eklenecek veya azaltılacak soru adedi" title="Eklenecek / azaltılacak adet (boşsa 1)" ${questionPending.has(t.id)?'disabled':''}>
+               <button class="detail-mini plus" type="button" data-qplus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru ekle" title="Kutudaki adedi ekle (boşsa 1)" ${questionPending.has(t.id)||t.solved>=100000?'disabled':''}>+</button>
+               <button class="detail-mini minus" type="button" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru geri al" title="Kutudaki adedi azalt (boşsa 1)" ${questionPending.has(t.id)||!t.solved?'disabled':''}>−</button>
              </div></div>`).join('');
           return `<article class="subject ${PALETTE[i%PALETTE.length]} ${expanded?'is-expanded':''}">
               <div class="subject-head subject-head--toggle" role="button" tabindex="0" aria-expanded="${expanded}" data-qexpand="${safeText(s.id)}">
@@ -1094,6 +1164,10 @@
         qs('questionPercent').textContent=String(grandSolved);
         qs('questionBadge').textContent='soru çözüldü';
         qs('addQuestionSubject').disabled=!extrasReady;
+        if(focusId){
+          const input=Array.from(qs('questionList').querySelectorAll('[data-qamount]')).find(el=>el.dataset.qamount===focusId);
+          if(input&&!input.disabled){input.focus({preventScroll:true});if(selection[0]!==null)input.setSelectionRange(...selection);}
+        }
       }
       const scoreHead=()=>'<div class="score-head"><span>Ders / konu</span><span>D</span><span>Y</span><span>B</span><span></span></div>';
       function scoreRow({name,score,editAttr,editId,toggleAttr='',toggleId='',expanded=false,extraClass=''}){
@@ -1170,10 +1244,13 @@
       };
       function extraRecords(kind){return ({'question-subject':qSubjects,'question-topic':qTopics,'exam':exams,'exam-subject':examSubjects,'exam-topic':examTopics})[kind];}
       function openExtra(kind,id=null,parentId=null){
-        if(!panelAvailable())return;
+        if(extraSaving||!panelAvailable())return;
         const cfg=EXTRA_CONFIG[kind],item=id?extraRecords(kind).find(x=>x.id===id):null;
         if(id&&!item)return;
-        pendingExtra={kind,id,parentId};
+        pendingExtra={kind,id,parentId,revision:item?.revision??null};
+        qs('extraActivityField').hidden=kind!=='question-topic';
+        qs('extraActivityMode').value='work';
+        qs('extraFreshOption').hidden=!!id;
         qs('extraDialogTitle').textContent=id?`${cfg.name} düzenle`:`${cfg.name} ekle`;
         qs('extraKicker').textContent=cfg.label;
         qs('extraNameLabel').textContent=cfg.name;
@@ -1187,8 +1264,10 @@
         qs('extraDate').value=item?.exam_date||dateLocal();
         qs('extraUrl').value=item?.playlist_url||'';
         qs('extraQuestionSolved').value=String(item?.solved??0);
+        qs('extraQuestionCorrect').value=String(item?.correct??0);
+        qs('extraQuestionWrong').value=String(item?.wrong??0);
         qs('extraCorrect').value=String(item?.correct??0);qs('extraWrong').value=String(item?.wrong??0);qs('extraBlank').value=String(item?.blank??0);
-        qs('extraHelp').textContent=kind==='exam-subject'?'Bu derse konu eklersen dersin toplam D/Y/B değerleri otomatik olarak konuların toplamından hesaplanır.':kind==='exam-topic'?'Konu sonuçları dersin ve denemenin toplamlarına otomatik eklenir.':kind==='question-topic'?'Çözdüğün soru sayısını yaz; daha sonra yeşil + ve kırmızı − ile güncelleyebilirsin.':'';
+        qs('extraHelp').textContent=kind==='exam-subject'?'Bu derse konu eklersen dersin toplam D/Y/B değerleri otomatik olarak konuların toplamından hesaplanır.':kind==='exam-topic'?'Konu sonuçları dersin ve denemenin toplamlarına otomatik eklenir.':kind==='question-topic'?'Konunun toplam çözülen soru, doğru ve yanlış sayılarını yaz. Doğru + yanlış, çözülen soru sayısını aşamaz. + ve − yalnızca toplamı değiştirir.':'';
         qs('extraDelete').hidden=!item;qs('extraError').hidden=true;
         qs('extraDialog').showModal();qs('extraName').focus();
       }
@@ -1200,20 +1279,49 @@
       activateOnKeyboard(qs('questionList'),'data-qexpand');
       activateOnKeyboard(qs('examList'),'data-eexpand-exam');
       activateOnKeyboard(qs('examList'),'data-eexpand-group');
+      function readQuestionAddCount(raw){
+        const text=String(raw??'').trim();
+        if(!text)return 1;
+        const amount=Number(text);
+        if(!/^\d+$/.test(text)||!Number.isSafeInteger(amount)||amount<1||amount>100000)
+          throw new Error('İşlem adedi 1 ile 100.000 arasında tam sayı olmalı.');
+        return amount;
+      }
+      qs('questionList').addEventListener('input',event=>{
+        const id=event.target.dataset.qamount;
+        if(id)questionAddDrafts.set(id,event.target.value);
+      });
       qs('questionList').addEventListener('click',async e=>{
         const action=e.target.closest('button,a,[data-qexpand]');if(!action)return;
         const d=action.dataset;
         if('qexpand'in d){toggleSet(expandedQuestions,d.qexpand);renderQuestions();}
         else if('qeditSubject'in d)openExtra('question-subject',d.qeditSubject);
         else if('qaddTopic'in d)openExtra('question-topic',null,d.qaddTopic);
-        else if('qeditTopic'in d)openExtra('question-topic',d.qeditTopic);
+        else if('qeditTopic'in d){if(!questionPending.has(d.qeditTopic))openExtra('question-topic',d.qeditTopic);}
         else if('qplus'in d||'qminus'in d){
           if(!panelAvailable())return;
-          const id=d.qplus||d.qminus,delta=d.qplus?1:-1;
+          const id=d.qplus||d.qminus;
+          if(questionPending.has(id))return;
           const item=qTopics.find(t=>t.id===id);if(!item)return;
-          const target=item.solved+delta;if(target<0||target>100000)return;
-          action.disabled=true;
-          try{await panelSave('question_topics',{solved:target},id);}catch(err){window.alert('Soru sayısı güncellenemedi: '+err.message);}finally{action.disabled=false;}
+          let delta;
+          try{delta=readQuestionAddCount(questionAddDrafts.get(id))*(d.qplus?1:-1);}
+          catch(err){window.alert(err.message);return;}
+          const target=item.solved+delta;
+          if(target<0){window.alert('Azaltılacak adet, çözülen soru sayısından fazla olamaz.');return;}
+          if(target>100000){window.alert('Toplam çözülen soru 100.000 sınırını aşamaz.');return;}
+          if(target<num(item.correct)+num(item.wrong)){
+            openExtra('question-topic',id);
+            qs('extraQuestionSolved').value=String(target);
+            qs('extraHelp').textContent='Toplamı azaltmak için doğru veya yanlış sayısını da düzenle. Değişiklikler Kaydet ile uygulanır.';
+            qs('extraQuestionCorrect').focus();
+            return;
+          }
+          questionPending.add(id);renderQuestions();
+          try{
+            await panelSave('question_topics',{solved:target},id,item.revision);
+            questionAddDrafts.delete(id);
+          }catch(err){window.alert('Soru sayısı güncellenemedi: '+err.message);}
+          finally{questionPending.delete(id);renderQuestions();}
         }else if('questionLink'in d){const sub=qSubjects.find(s=>s.id===d.questionLink);if(!sub?.playlist_url){e.preventDefault();openExtra('question-subject',d.questionLink);}}
       });
       qs('examList').addEventListener('click',e=>{
@@ -1230,15 +1338,20 @@
         else if('eeditTopic'in d)openExtra('exam-topic',d.eeditTopic);
       });
       qs('extraForm').addEventListener('submit',async e=>{
-        e.preventDefault();if(!pendingExtra)return;
-        const {kind,id,parentId}=pendingExtra,cfg=EXTRA_CONFIG[kind];
+        e.preventDefault();if(!pendingExtra||extraSaving)return;
+        const {kind,id,parentId,revision}=pendingExtra,cfg=EXTRA_CONFIG[kind];
         const title=qs('extraName').value.trim();qs('extraError').hidden=true;
         if(!title||title.length>80){showError(new Error('Ad alanını 1-80 karakter arasında doldur.'),'extraError');return;}
         const values={title};
         const readInt=(field)=>{const raw=qs(field).value;if(raw.trim()==='')throw new Error('Tüm sayısal alanları doldur.');const n=Number(raw);if(!Number.isSafeInteger(n)||n<0||n>100000)throw new Error('Sayılar 0 ile 100.000 arasında tam sayı olmalı.');return n;};
         try{
           if(cfg.url){const raw=qs('extraUrl').value.trim(),url=validUrl(raw);if(raw&&!url)throw new Error('Geçerli bir HTTPS YouTube bağlantısı kullan.');values.playlist_url=url;}
-          if(cfg.questions){values.solved=readInt('extraQuestionSolved');}
+          if(cfg.questions){
+            values.solved=readInt('extraQuestionSolved');
+            values.correct=readInt('extraQuestionCorrect');
+            values.wrong=readInt('extraQuestionWrong');
+            validateQuestionCounts(values.solved,values.correct,values.wrong);
+          }
           if(kind==='exam'){values.exam_type=qs('extraExamType').value==='oabt'?'oabt':'ags';}
           if(cfg.date){values.exam_date=qs('extraDate').value;if(!/^\d{4}-\d{2}-\d{2}$/.test(values.exam_date)||Number.isNaN(new Date(values.exam_date+'T12:00:00').getTime()))throw new Error('Geçerli bir tarih seç.');}
           if(cfg.score){values.correct=readInt('extraCorrect');values.wrong=readInt('extraWrong');values.blank=readInt('extraBlank');}
@@ -1247,25 +1360,26 @@
             else if(kind==='exam-topic')values.exam_subject_id=parentId;
           }
           if(!panelAvailable())return;
-          const b=qs('extraSave');b.disabled=true;
+          const b=qs('extraSave');extraSaving=true;b.disabled=true;
           try{
-            await panelSave(cfg.table,values,id);
+            await panelSave(cfg.table,values,id,revision,cfg.questions?qs('extraActivityMode').value:'work');
+            if(kind==='question-topic'&&id)questionAddDrafts.delete(id);
             if(kind==='exam')expandedExamGroups.add(values.exam_type);
             if(!id&&kind==='question-topic')expandedQuestions.add(parentId);
             if(!id&&kind==='exam-subject')expandedExams.add(parentId);
             if(!id&&kind==='exam-topic'){expandedExamSubjects.add(parentId);const sub=examSubjects.find(s=>s.id===parentId);if(sub)expandedExams.add(sub.exam_id);}
             renderExtras();qs('extraDialog').close();pendingExtra=null;
-          }finally{b.disabled=false;}
+          }finally{extraSaving=false;b.disabled=false;}
         }catch(error){showError(error,'extraError');}
       });
       qs('extraDelete').addEventListener('click',async()=>{
-        if(!pendingExtra?.id||!panelAvailable())return;
-        const {kind,id}=pendingExtra,cfg=EXTRA_CONFIG[kind];
+        if(!pendingExtra?.id||extraSaving||!panelAvailable())return;
+        const {kind,id,revision}=pendingExtra,cfg=EXTRA_CONFIG[kind];
         if(!window.confirm('Bu kaydı ve bağlı alt kayıtları kalıcı olarak silmek istiyor musun?'))return;
-        const b=qs('extraDelete');b.disabled=true;qs('extraError').hidden=true;
-        try{await panelDelete(cfg.table,id);qs('extraDialog').close();pendingExtra=null;}
+        const b=qs('extraDelete');extraSaving=true;b.disabled=true;qs('extraError').hidden=true;
+        try{await panelDelete(cfg.table,id,revision);qs('extraDialog').close();pendingExtra=null;}
         catch(error){showError(error,'extraError');}
-        finally{b.disabled=false;}
+        finally{extraSaving=false;b.disabled=false;}
       });
       if(mode==='demo'){localExtraLoad();renderExtras();}
       else {renderExtras();void refreshExtras();}
@@ -1285,11 +1399,12 @@
       // Server-backed totals and source details use the same reporting snapshot.
       const summaryKinds={question:'Çözülen sorular',video:'İzlenen videolar',exam:'Eklenen denemeler'};
       const summaries={
-        today:{days:1,request:0,data:null,selected:null,status:qs('todayStatus'),details:qs('todayDetails'),
+        today:{days:1,request:0,data:null,dataDays:null,selected:null,status:qs('todayStatus'),details:qs('todayDetails'),
           values:{question:qs('todayQuestions'),video:qs('todayVideos'),exam:qs('todayExams')}},
-        period:{days:7,request:0,data:null,selected:null,status:qs('periodStatus'),details:qs('periodDetails'),
+        period:{days:7,request:0,data:null,dataDays:null,selected:null,status:qs('periodStatus'),details:qs('periodDetails'),
           values:{question:qs('period-question'),video:qs('period-video'),exam:qs('period-exam')}}
       };
+      const periodLabels={1:'Bugün',7:'Bu hafta',30:'Bu ay',90:'Bu üç aylık dönem'};
       const reportDate=value=>String(value).split('-').reverse().join('.');
       function renderSummaryDetails(name){
         const state=summaries[name];
@@ -1301,37 +1416,48 @@
         if(!state.data){state.details.innerHTML='<p>'+safeText(state.status.textContent||'Yükleniyor…')+'</p>';return;}
         const rows=state.data.details.filter(row=>row.kind===state.selected);
         const heading='<h3>'+summaryKinds[state.selected]+'</h3>';
-        state.details.innerHTML=heading+(rows.length?'<ul>'+rows.map(row=>{
+        const content=heading+(rows.length?'<ul>'+rows.map(row=>{
           const legacy=!row.source_id;
           const subject=legacy?'Ayrıntısı bulunmayan eski kayıtlar':(row.subject||'Adı bulunmayan ders');
           const topic=legacy?'Ders ve konu bilgisi bu kayıtlarda tutulmamış.':(row.topic||'');
           return '<li><div><b>'+safeText(subject)+'</b>'+(topic?'<small>'+safeText(topic)+'</small>':'')+'</div><strong>'+safeText(row.total)+'</strong></li>';
         }).join('')+'</ul>':'<p>Bu dönemde kayıt yok.</p>');
+        // Keep unchanged lists in place so background refreshes preserve scroll.
+        if(state.details.innerHTML!==content){
+          const scrollTop=state.details.querySelector('ul')?.scrollTop||0;
+          state.details.innerHTML=content;
+          const list=state.details.querySelector('ul');
+          if(list)list.scrollTop=scrollTop;
+        }
       }
       async function refreshSummary(name){
         const state=summaries[name],request=++state.request,days=state.days;
-        state.data=null;
-        state.status.textContent='Yükleniyor…';state.status.hidden=false;
-        Object.values(state.values).forEach(el=>el.textContent='—');
-        renderSummaryDetails(name);
+        const hasCurrentData=state.data!==null&&state.dataDays===days;
+        if(!hasCurrentData){
+          state.data=null;state.dataDays=null;
+          state.status.textContent='Yükleniyor…';state.status.hidden=false;
+          Object.values(state.values).forEach(el=>el.textContent='—');
+          renderSummaryDetails(name);
+        }
         try{
           if(!db)throw new Error('Özetler için ortak veritabanı bağlantısı gerekiyor.');
           const {data,error}=await db.rpc('sekolata_summary',{p_days:days});
           if(request!==state.request)return;
           if(error){
             if(['PGRST202','42883','42P01','42703'].includes(error.code))
-              throw new Error('Özetleri etkinleştirmek için supabase-ozet-detay.sql dosyasının tamamını Supabase SQL Editor’da çalıştır.');
+              throw new Error('Özetleri etkinleştirmek için supabase-sayac-v2.sql dosyasının tamamını Supabase SQL Editor’da çalıştır.');
             throw new Error('Özet okunamadı. Bağlantını kontrol edip yeniden dene.'+(error.code?' ('+error.code+')':''));
           }
           if(!data?.totals||!Array.isArray(data.details))throw new Error('Özet yanıtı eksik.');
-          if(data.tracking_ready!==true)throw new Error('Kayıt tetikleyicileri eksik. supabase-ozet-detay.sql dosyasını çalıştır.');
-          state.data=data;
+          if(data.schema_version!==2)throw new Error('Takvim özetleri için supabase-sayac-v2.sql dosyasını çalıştır.');
+          if(data.tracking_ready!==true)throw new Error('Kayıt tetikleyicileri eksik. supabase-sayac-v2.sql dosyasını çalıştır.');
+          state.data=data;state.dataDays=days;
           for(const kind of Object.keys(summaryKinds))state.values[kind].textContent=String(Number(data.totals[kind])||0);
-          if(name==='period')qs('periodRange').textContent='Son '+days+' gün · '+reportDate(data.start_date)+' – '+reportDate(data.end_date);
+          if(name==='period')qs('periodRange').textContent=periodLabels[days]+' · '+reportDate(data.start_date)+' – '+reportDate(data.end_date);
           state.status.textContent='';state.status.hidden=true;
         }catch(error){
           if(request!==state.request)return;
-          state.status.textContent=error.message;state.status.hidden=false;
+          state.status.textContent=(hasCurrentData?'Son alınan veriler gösteriliyor. ':'')+error.message;state.status.hidden=false;
         }
         renderSummaryDetails(name);
       }
@@ -1357,7 +1483,7 @@
       document.querySelectorAll('[data-days]').forEach(button=>button.addEventListener('click',()=>{
         summaries.period.days=Number(button.dataset.days);
         document.querySelectorAll('[data-days]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
-        qs('periodRange').textContent='Son '+summaries.period.days+' gün';
+        qs('periodRange').textContent=periodLabels[summaries.period.days];
         void refreshSummary('period');
       }));
       document.querySelectorAll('[data-summary]').forEach(button=>button.addEventListener('click',()=>{
