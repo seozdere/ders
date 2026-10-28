@@ -455,8 +455,14 @@
     .exam-countdown-time { color:#52685b; text-align:right; white-space:nowrap; font:900 11px/1.25 'Nunito',sans-serif; font-variant-numeric:tabular-nums; }
     .exam-countdown-row--oabt .exam-countdown-time { color:#796f94; }
     .exam-countdown-time.is-finished { color:#9b9d9d; font-size:10px; }
+    /* Yalnızca iPad Mini dikey (768px civarı): sayfa gövdesini tam ortala. */
+    @media (min-width:740px) and (max-width:800px) and (orientation:portrait) {
+      .page { width:min(100%,680px); }
+    }
     /* Yalnızca dikey tablet: üstteki üçlü grubu ortala ve kompakt tut. */
     @media (min-width:601px) and (max-width:1024px) and (orientation:portrait) {
+      /* Tabletlerde disari tasan dekoratif SVG yatay sayfa kaydirmasi olusturmasin. */
+      html, body { overflow-x:clip; }
       .page-actions { display:flex; justify-content:center; align-items:center; gap:6px; }
       .page-actions > .drive-link { flex:0 0 60px; }
       .page-actions > .exam-countdown { flex:0 0 208px; }
