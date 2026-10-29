@@ -1,6 +1,6 @@
 /* Seko Kontrol PWA — sadece bu sitenin statik dosyalarını önbelleğe alır. */
 'use strict';
-const CACHE = 'seko-kontrol-static-v11';
+const CACHE = 'seko-kontrol-static-v12';
 const CORE_FILES = [
   './',
   './index.html',

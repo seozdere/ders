@@ -433,10 +433,24 @@
     .question-count-fields input { padding-inline:9px; }
     .question-count-fields .field > span { font-size:11px; }
     .question-count-note { display:block; margin-top:3px; color:#85918b; font:700 10px/1.4 'Nunito',sans-serif; }
-    .question-add-count { width:43px; height:28px; min-width:0; padding:3px 5px; border:1px solid #dbe6d9; border-radius:8px; background:#f2f7ee; color:#5e7b6e; text-align:center; font:800 12px/1.2 'Nunito',sans-serif; font-variant-numeric:tabular-nums; }
+    #questionList .question-quick-actions { display:grid; grid-template-columns:25px repeat(3,minmax(0,50px)) 26px 26px; gap:5px; max-width:100%; flex:0 1 auto; }
+    .question-add-count { width:100%; height:28px; min-width:0; padding:3px; border:1px solid #dfe3e3; border-radius:8px; background:#f0f2f2; color:#667572; text-align:center; font:800 11px/1.2 'Nunito',sans-serif; font-variant-numeric:tabular-nums; }
+    .question-add-count--correct { background:#edf6ed; border-color:#d5e8d6; color:#64886b; }
+    .question-add-count--wrong { background:#fbeeee; border-color:#efd7d7; color:#b07b7b; }
+    .question-add-count--correct::placeholder { color:#84a58a; }
+    .question-add-count--wrong::placeholder { color:#c29797; }
     .question-add-count::placeholder { color:#a0afa3; }
     .question-add-count:disabled { opacity:.5; }
-    @media(max-width:420px){ #questionList .detail-row { flex-wrap:wrap; } #questionList .detail-name { flex:1 1 calc(100% - 55px); } #questionList .question-quick-actions { margin-left:auto; } }
+    @media(max-width:600px){
+      #questionList .detail-row { flex-wrap:wrap; }
+      #questionList .detail-name { flex:1 1 calc(100% - 60px); }
+      #questionList .question-quick-actions { width:min(100%,265px); grid-template-columns:25px repeat(3,minmax(0,1fr)) 26px 26px; margin-left:auto; }
+    }
+    @media(max-width:370px){
+      #questionList .question-quick-actions { grid-template-columns:24px repeat(3,minmax(0,1fr)) 24px 24px; gap:3px; }
+      #questionList .question-quick-actions button { width:24px; }
+      #questionList .question-add-count { padding-inline:2px; font-size:10px; }
+    }
     /* Reserve one status line to prevent the cards jumping after loading. */
     #todayStatus, #periodStatus { min-height:17px; }
     #todayStatus[hidden], #periodStatus[hidden] { display:block!important; visibility:hidden; }
@@ -1237,7 +1251,7 @@
       const smallFoldDoodle=`<svg class="score-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
       function renderQuestions(){
         const focused=document.activeElement;
-        const focusId=focused?.dataset?.qamount;
+        const focusId=focused?.dataset?.qamount,focusField=focused?.dataset?.qfield;
         const selection=focusId?[focused.selectionStart,focused.selectionEnd]:null;
         const grandSolved=qTopics.reduce((sum,t)=>sum+t.solved,0);
         const html=qSubjects.map((s,i)=>{
@@ -1250,9 +1264,11 @@
              <span class="detail-values" aria-label="${safeText(t.title)}: ${t.solved} soru çözüldü">${t.solved}</span>
              <div class="question-quick-actions">
                <button class="detail-edit" type="button" data-qedit-topic="${safeText(t.id)}" aria-label="${safeText(t.title)} konusunu düzenle" title="Konuyu düzenle" ${questionPending.has(t.id)?'disabled':''}>✎</button>
-               <input class="question-add-count" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" value="${safeText(questionAddDrafts.get(t.id)||'')}" placeholder="1" aria-label="${safeText(t.title)} eklenecek veya azaltılacak soru adedi" title="Eklenecek / azaltılacak adet (boşsa 1)" ${questionPending.has(t.id)?'disabled':''}>
+               <input class="question-add-count" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="total" value="${safeText(questionAddDrafts.get(t.id)?.total||'')}" placeholder="Top." aria-label="${safeText(t.title)} toplam soru adedi" title="Toplam soru (üç kutu boşsa +1)" ${questionPending.has(t.id)?'disabled':''}>
+               <input class="question-add-count question-add-count--correct" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="correct" value="${safeText(questionAddDrafts.get(t.id)?.correct||'')}" placeholder="D" aria-label="${safeText(t.title)} eklenecek doğru sayısı" title="Doğru (boşsa 0)" ${questionPending.has(t.id)?'disabled':''}>
+               <input class="question-add-count question-add-count--wrong" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="wrong" value="${safeText(questionAddDrafts.get(t.id)?.wrong||'')}" placeholder="Y" aria-label="${safeText(t.title)} eklenecek yanlış sayısı" title="Yanlış (boşsa 0)" ${questionPending.has(t.id)?'disabled':''}>
                <button class="detail-mini plus" type="button" data-qplus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru ekle" title="Kutudaki adedi ekle (boşsa 1)" ${questionPending.has(t.id)||t.solved>=100000?'disabled':''}>+</button>
-               <button class="detail-mini minus" type="button" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru geri al" title="Kutudaki adedi azalt (boşsa 1)" ${questionPending.has(t.id)||!t.solved?'disabled':''}>−</button>
+               <button class="detail-mini minus" type="button" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru geri al" title="Azaltmak için yalnız toplam kutusuna pozitif adet yaz" ${questionPending.has(t.id)||!t.solved||!canSubtractQuestions(questionAddDrafts.get(t.id))?'disabled':''}>−</button>
              </div></div>`).join('');
           return `<article class="subject ${PALETTE[i%PALETTE.length]} ${expanded?'is-expanded':''}">
               <div class="subject-head subject-head--toggle" role="button" tabindex="0" aria-expanded="${expanded}" data-qexpand="${safeText(s.id)}">
@@ -1272,7 +1288,7 @@
         qs('questionBadge').textContent='soru çözüldü';
         qs('addQuestionSubject').disabled=!extrasReady;
         if(focusId){
-          const input=Array.from(qs('questionList').querySelectorAll('[data-qamount]')).find(el=>el.dataset.qamount===focusId);
+          const input=Array.from(qs('questionList').querySelectorAll('[data-qamount]')).find(el=>el.dataset.qamount===focusId&&el.dataset.qfield===focusField);
           if(input&&!input.disabled){input.focus({preventScroll:true});if(selection[0]!==null)input.setSelectionRange(...selection);}
         }
       }
@@ -1394,9 +1410,36 @@
           throw new Error('İşlem adedi 1 ile 100.000 arasında tam sayı olmalı.');
         return amount;
       }
+      function readQuestionQuickCounts(draft={}){
+        const totalText=String(draft.total??'').trim();
+        const correctText=String(draft.correct??'').trim(),wrongText=String(draft.wrong??'').trim();
+        const hasAnswers=correctText!==''||wrongText!=='';
+        if(!totalText&&hasAnswers)throw new Error('Doğru veya yanlış girdiğinde toplam soru adedini de yaz.');
+        const readAnswer=text=>{
+          if(!text)return 0;
+          const value=Number(text);
+          if(!/^\d+$/.test(text)||!Number.isSafeInteger(value)||value<0||value>100000)
+            throw new Error('Doğru ve yanlış 0 ile 100.000 arasında tam sayı olmalı.');
+          return value;
+        };
+        const total=readQuestionAddCount(totalText),correct=readAnswer(correctText),wrong=readAnswer(wrongText);
+        if(correct+wrong>total)throw new Error('Eklenen doğru ve yanlış toplamı, eklenen soru adedini aşamaz.');
+        return {total,correct,wrong,hasAnswers};
+      }
+      function canSubtractQuestions(draft={}){
+        if(String(draft.correct??'').trim()!==''||String(draft.wrong??'').trim()!=='')return false;
+        const text=String(draft.total??'').trim(),amount=Number(text);
+        return /^\d+$/.test(text)&&Number.isSafeInteger(amount)&&amount>0&&amount<=100000;
+      }
       qs('questionList').addEventListener('input',event=>{
-        const id=event.target.dataset.qamount;
-        if(id)questionAddDrafts.set(id,event.target.value);
+        const id=event.target.dataset.qamount,field=event.target.dataset.qfield;
+        if(!id||!['total','correct','wrong'].includes(field))return;
+        const draft={...questionAddDrafts.get(id),[field]:event.target.value};
+        questionAddDrafts.set(id,draft);
+        // Only toggle minus; avoid replacing the focused input while typing.
+        const minus=event.target.closest('.question-quick-actions')?.querySelector('[data-qminus]');
+        const item=qTopics.find(t=>t.id===id);
+        if(minus)minus.disabled=questionPending.has(id)||!item?.solved||!canSubtractQuestions(draft);
       });
       qs('questionList').addEventListener('click',async e=>{
         const action=e.target.closest('button,a,[data-qexpand]');if(!action)return;
@@ -1410,22 +1453,31 @@
           const id=d.qplus||d.qminus;
           if(questionPending.has(id))return;
           const item=qTopics.find(t=>t.id===id);if(!item)return;
-          let delta;
-          try{delta=readQuestionAddCount(questionAddDrafts.get(id))*(d.qplus?1:-1);}
-          catch(err){window.alert(err.message);return;}
-          const target=item.solved+delta;
-          if(target<0){window.alert('Azaltılacak adet, çözülen soru sayısından fazla olamaz.');return;}
-          if(target>100000){window.alert('Toplam çözülen soru 100.000 sınırını aşamaz.');return;}
-          if(target<num(item.correct)+num(item.wrong)){
-            openExtra('question-topic',id);
-            qs('extraQuestionSolved').value=String(target);
-            qs('extraHelp').textContent='Toplamı azaltmak için doğru veya yanlış sayısını da düzenle. Değişiklikler Kaydet ile uygulanır.';
-            qs('extraQuestionCorrect').focus();
-            return;
-          }
+          const subtract='qminus'in d,draft=questionAddDrafts.get(id);
+          if(subtract&&!canSubtractQuestions(draft))return;
+          let values;
+          try{
+            const entry=readQuestionQuickCounts(draft);
+            const target=item.solved+(subtract?-entry.total:entry.total);
+            if(target<0)throw new Error('Azaltılacak adet, çözülen soru sayısından fazla olamaz.');
+            if(target>100000)throw new Error('Toplam çözülen soru 100.000 sınırını aşamaz.');
+            if(subtract&&target<num(item.correct)+num(item.wrong)){
+              openExtra('question-topic',id);
+              qs('extraQuestionSolved').value=String(target);
+              qs('extraHelp').textContent='Toplamı azaltmak için doğru veya yanlış sayısını da düzenle. Değişiklikler Kaydet ile uygulanır.';
+              qs('extraQuestionCorrect').focus();
+              return;
+            }
+            values={solved:target};
+            if(!subtract&&entry.hasAnswers){
+              values.correct=num(item.correct)+entry.correct;
+              values.wrong=num(item.wrong)+entry.wrong;
+            }
+            validateQuestionCounts(target,values.correct??num(item.correct),values.wrong??num(item.wrong));
+          }catch(err){window.alert(err.message);return;}
           questionPending.add(id);renderQuestions();
           try{
-            await panelSave('question_topics',{solved:target},id,item.revision);
+            await panelSave('question_topics',values,id,item.revision);
             questionAddDrafts.delete(id);
           }catch(err){window.alert('Soru sayısı güncellenemedi: '+err.message);}
           finally{questionPending.delete(id);renderQuestions();}
