@@ -1310,7 +1310,7 @@
                <input class="question-add-count question-add-count--correct" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="correct" value="${safeText(questionAddDrafts.get(t.id)?.correct||'')}" placeholder="D" aria-label="${safeText(t.title)} eklenecek doğru sayısı" title="Doğru (boşsa 0)" ${questionPending.has(t.id)?'disabled':''}>
                <input class="question-add-count question-add-count--wrong" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="wrong" value="${safeText(questionAddDrafts.get(t.id)?.wrong||'')}" placeholder="Y" aria-label="${safeText(t.title)} eklenecek yanlış sayısı" title="Yanlış (boşsa 0)" ${questionPending.has(t.id)?'disabled':''}>
                <button class="detail-mini plus" type="button" data-qplus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru ekle" title="Kutudaki adedi ekle (boşsa 1)" ${questionPending.has(t.id)||t.solved>=100000?'disabled':''}>+</button>
-               <button class="detail-mini minus" type="button" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru geri al" title="Azaltmak için yalnız toplam kutusuna pozitif adet yaz" ${questionPending.has(t.id)||!t.solved||!canSubtractQuestions(questionAddDrafts.get(t.id))?'disabled':''}>−</button>
+               <button class="detail-mini minus" type="button" data-qminus="${safeText(t.id)}" aria-label="${safeText(t.title)} girilen adette soru geri al" title="Kutular boşsa 1 soru azaltır; toplu azaltmak için yalnız toplam kutusuna adet yaz" ${questionPending.has(t.id)||!t.solved||!canSubtractQuestions(questionAddDrafts.get(t.id))?'disabled':''}>−</button>
              </div></div>`).join('');
           return `<article class="subject ${PALETTE[i%PALETTE.length]} ${expanded?'is-expanded':''}">
               <div class="subject-head subject-head--toggle" role="button" tabindex="0" aria-expanded="${expanded}" data-qexpand="${safeText(s.id)}">
@@ -1471,6 +1471,7 @@
       function canSubtractQuestions(draft={}){
         if(String(draft.correct??'').trim()!==''||String(draft.wrong??'').trim()!=='')return false;
         const text=String(draft.total??'').trim(),amount=Number(text);
+        if(!text)return true;
         return /^\d+$/.test(text)&&Number.isSafeInteger(amount)&&amount>0&&amount<=100000;
       }
       qs('questionList').addEventListener('input',event=>{
