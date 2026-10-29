@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f5ee">
-  <meta name="description" content="Ders Takibi">
-  <title>Seko Kontrol</title>
+  <meta name="description" content="Video çalışma panom — AGS ve diğer dersler için ortak video ilerleme takibi.">
+  <title>Video çalışma panom · Sekolata</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -428,6 +428,39 @@
     .summary-collapse { display:flex; align-items:center; justify-content:center; width:44px; height:32px; margin:10px auto 0; padding:0; border:1px solid #e4e0ee; border-radius:999px; color:#8c81a3; background:#f5f1fa; }
     .summary-collapse:hover { background:#eae3f3; border-color:#cfc2e2; }
     .summary-collapse svg { width:18px; height:18px; }
+    /* Seçilen gün/hafta ayrıntısı; mevcut toplam kartlarından bağımsız. */
+    .period-slice-host[hidden], .period-slice-panel[hidden], .period-slice-content[hidden], .period-slice-retry[hidden] { display:none!important; }
+    .period-slice-tabs { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; margin:0 0 10px; }
+    .period-slice-tabs button { position:relative; min-width:0; min-height:35px; padding:5px 2px; border:1px solid #e8e8e5; border-radius:9px; background:#fafbf8; color:#85918b; font:800 10.5px/1.2 'Nunito',sans-serif; text-align:center; }
+    .period-slice-tabs button small { display:block; margin-top:3px; font-size:9px; font-weight:600; opacity:.8; }
+    .period-slice-tabs button:hover { background:#f1f5ef; }
+    .period-slice-tabs button[aria-expanded="true"] { background:#eeeaf6; border-color:#d4c9e7; color:#817192; }
+    .period-slice-tabs button.is-today { color:#638d70; border-color:#cfe4d3; background:#eff7ef; }
+    .period-slice-tabs button.is-today::after { content:''; position:absolute; top:4px; right:4px; width:4px; height:4px; border-radius:50%; background:#8dbb97; box-shadow:0 0 6px 2px #9ac7a34d; }
+    .period-slice-tabs button.is-future { color:#a3aaa6; }
+    .period-slice-tabs button:focus-visible, .period-slice-close:focus-visible { outline:2px solid #b8cbbd; outline-offset:2px; }
+    .period-slice-panel { min-width:0; margin:0 0 12px; padding:11px; border:1px solid #e5eade; border-radius:13px; background:#fcfdf9; animation:periodSliceReveal .18s ease-out; }
+    .period-slice-header { display:flex; justify-content:space-between; align-items:start; gap:8px; margin-bottom:9px; }
+    .period-slice-header h3 { font:900 12px/1.4 'Nunito',sans-serif; color:#718278; }
+    .period-slice-header small { display:block; margin-top:2px; color:#96a098; font-size:10px; }
+    .period-slice-close { flex:0 0 24px; width:24px; height:24px; border:0; border-radius:8px; background:#f0f3eb; color:#91a18e; font-size:17px; line-height:1; }
+    .period-slice-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .period-slice-section { min-width:0; padding:8px; border-radius:10px; background:#f5f1fa; }
+    .period-slice-section--video { background:#eef6ef; }
+    .period-slice-section h4 { display:flex; justify-content:space-between; gap:5px; font:800 11px/1.3 'Nunito',sans-serif; color:#9281ac; }
+    .period-slice-section--video h4 { color:#78a081; }
+    .period-slice-section ul { list-style:none; padding:0; margin:6px 0 0; max-height:180px; overflow-y:auto; }
+    .period-slice-section li { display:flex; align-items:start; justify-content:space-between; gap:6px; padding:4px 0; color:#748178; font-size:11px; }
+    .period-slice-section li span { min-width:0; overflow-wrap:anywhere; }
+    .period-slice-section li strong { flex-shrink:0; font-variant-numeric:tabular-nums; }
+    .period-slice-section p { margin-top:7px; color:#a1a79e; font-size:10px; }
+    .period-slice-exams { display:flex; justify-content:space-between; gap:8px; margin-top:8px; padding:7px 9px; border-radius:9px; background:#fff3eb; color:#b38d79; font:800 11px/1.3 'Nunito',sans-serif; }
+    .period-slice-status { min-height:14px; margin-top:5px; font-size:10px; line-height:1.4; color:#9a9082; }
+    .period-slice-status[hidden] { display:block!important; visibility:hidden; }
+    .period-slice-retry { margin-top:5px; border:1px solid #e3e7dc; border-radius:8px; padding:5px 8px; background:#f5f7ef; color:#7c8d79; font-size:10px; }
+    @keyframes periodSliceReveal { from { opacity:.5; transform:translateY(-3px); } to { opacity:1; transform:translateY(0); } }
+    @media(max-width:370px){ .period-slice-tabs { gap:3px; } .period-slice-tabs button { font-size:10px; } .period-slice-panel { padding:9px; } .period-slice-section { padding:7px; } }
+    @media(prefers-reduced-motion:reduce){ .period-slice-panel { animation:none; } }
     .question-count-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
     .question-count-fields .field { min-width:0; }
     .question-count-fields input { padding-inline:9px; }
@@ -456,7 +489,7 @@
     #todayStatus[hidden], #periodStatus[hidden] { display:block!important; visibility:hidden; }
 
     /* AGS / ÖABT: Özetler ve Drive arasında bağımsız sınav geri sayımı. */
-    .page-actions { display:grid; grid-template-columns:60px minmax(0,244px) 60px; align-items:center; justify-content:space-between; column-gap:9px; }
+    .page-actions { display:grid; grid-template-columns:60px minmax(0,216px) 60px; align-items:center; justify-content:space-between; column-gap:9px; }
     .page-actions > .drive-link { justify-self:center; }
     .exam-countdown { display:grid; gap:4px; min-width:0; width:100%; padding:7px 10px; border:1px solid #e5ebe5; border-radius:16px; background:rgba(255,254,250,.95); box-shadow:0 4px 14px rgba(77,91,86,.045); }
     .exam-countdown-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; column-gap:4px; min-width:0; }
@@ -479,13 +512,13 @@
       html, body { overflow-x:clip; }
       .page-actions { display:flex; justify-content:center; align-items:center; gap:6px; }
       .page-actions > .drive-link { flex:0 0 60px; }
-      .page-actions > .exam-countdown { flex:0 0 208px; }
+      .page-actions > .exam-countdown { flex:0 0 188px; }
     }
     /* Mobilde üst üçlü grubu sayfanın tamamına yayma; ortada kompakt tut. */
     @media(max-width:600px) {
       .page-actions { display:flex; justify-content:center; align-items:center; gap:6px; }
       .page-actions > .drive-link { flex:0 0 60px; }
-      .page-actions > .exam-countdown { flex:0 1 208px; }
+      .page-actions > .exam-countdown { flex:0 1 188px; }
     }
     @media(max-width:420px) {
       .page-actions { gap:4px; }
@@ -557,6 +590,15 @@
         <button type="button" data-days="7" aria-pressed="true">Haftalık</button>
         <button type="button" data-days="30" aria-pressed="false">Aylık</button>
         <button type="button" data-days="90" aria-pressed="false">Üç aylık</button>
+      </div>
+      <div class="period-slice-host" id="periodSliceHost" hidden>
+        <div class="period-slice-tabs" id="periodSliceTabs" role="group" aria-label="Gün seçimi"></div>
+        <section class="period-slice-panel" id="periodSlicePanel" aria-labelledby="periodSliceTitle" hidden>
+          <div class="period-slice-header"><div><h3 id="periodSliceTitle"></h3><small id="periodSliceRange"></small></div><button class="period-slice-close" id="periodSliceClose" type="button" aria-label="Seçili dönem ayrıntısını kapat">×</button></div>
+          <div class="period-slice-content" id="periodSliceContent" aria-live="polite" hidden></div>
+          <p class="period-slice-status" id="periodSliceStatus" role="status" hidden></p>
+          <button class="period-slice-retry" id="periodSliceRetry" type="button" hidden>Yeniden dene</button>
+        </section>
       </div>
       <p class="summary-range" id="periodRange">Bu hafta</p>
       <div class="today-grid">
@@ -733,7 +775,7 @@
         let months = (target.year - today.year) * 12 + target.month - today.month;
         if (dayNumber(addCalendarMonths(today, months)) > dayNumber(target)) months--;
         const days = dayNumber(target) - dayNumber(addCalendarMonths(today, months));
-        return months ? `${days} gün ${months} ay` : `${days} gün`;
+        return months ? `${months} ay ${days} gün` : `${days} gün`;
       }
       function updateExamCountdowns() {
         const today = todayInTurkey();
@@ -1589,6 +1631,116 @@
           if(list)list.scrollTop=scrollTop;
         }
       }
+      // Independent day/week drill-down. Existing period totals keep their own state/RPC.
+      const periodSlice={request:0,selected:null,data:null,signature:'',mode:null,options:[]};
+      const periodSliceClock=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Istanbul',year:'numeric',month:'2-digit',day:'2-digit'});
+      function istanbulReportDate(now=new Date()){
+        const parts=Object.fromEntries(periodSliceClock.formatToParts(now).filter(p=>['year','month','day'].includes(p.type)).map(p=>[p.type,p.value]));
+        return parts.year+'-'+parts.month+'-'+parts.day;
+      }
+      function addReportDays(day,amount){
+        const date=new Date(day+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+amount);return date.toISOString().slice(0,10);
+      }
+      function calendarSlices(days,today){
+        const weekday=day=>(new Date(day+'T12:00:00Z').getUTCDay()+6)%7;
+        if(days===7){
+          const monday=addReportDays(today,-weekday(today));
+          const labels=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'],names=['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+          return labels.map((label,i)=>{const start=addReportDays(monday,i);return {key:start+'_'+start,start,end:start,label,title:names[i],day:Number(start.slice(-2))};});
+        }
+        if(days!==30)return [];
+        const [year,month]=today.split('-').map(Number);
+        const last=new Date(Date.UTC(year,month,0,12)).toISOString().slice(0,10),options=[];
+        let start=today.slice(0,8)+'01';
+        while(start<=last){
+          const end=[addReportDays(start,6-weekday(start)),last].sort()[0],label=(options.length+1)+'. Hafta';
+          options.push({key:start+'_'+end,start,end,label,title:label});start=addReportDays(end,1);
+        }
+        return options;
+      }
+      function updatePeriodSliceSelection(){
+        qs('periodSliceTabs').querySelectorAll('[data-slice-key]').forEach(button=>button.setAttribute('aria-expanded',String(button.dataset.sliceKey===periodSlice.selected?.key)));
+      }
+      function closePeriodSlice(){
+        periodSlice.request++;periodSlice.selected=null;periodSlice.data=null;
+        qs('periodSlicePanel').hidden=true;qs('periodSlicePanel').setAttribute('aria-busy','false');
+        qs('periodSliceContent').hidden=true;updatePeriodSliceSelection();
+      }
+      function syncPeriodSliceOptions(today=istanbulReportDate()){
+        const days=summaries.period.days,signature=days+'|'+today;
+        if(periodSlice.signature===signature)return;
+        if(periodSlice.mode!==days)closePeriodSlice();
+        periodSlice.mode=days;periodSlice.signature=signature;periodSlice.options=calendarSlices(days,today);
+        qs('periodSliceHost').hidden=!periodSlice.options.length;
+        if(periodSlice.selected&&!periodSlice.options.some(o=>o.key===periodSlice.selected.key))closePeriodSlice();
+        const host=qs('periodSliceTabs');
+        host.setAttribute('aria-label',days===7?'Bu haftanın günleri':'Bu ayın takvim haftaları');
+        host.style.gridTemplateColumns='repeat('+Math.max(1,periodSlice.options.length)+',minmax(0,1fr))';
+        host.innerHTML=periodSlice.options.map(option=>{
+          const current=days===7&&option.start===today,future=option.start>today;
+          const range=reportDate(option.start)+(option.start===option.end?'':' – '+reportDate(option.end));
+          return '<button type="button" data-slice-key="'+option.key+'" class="'+(current?'is-today ':'')+(future?'is-future':'')+'" aria-expanded="false" aria-controls="periodSlicePanel" '+(current?'aria-current="date" ':'')+'aria-label="'+safeText(option.title+' · '+range)+'" title="'+safeText(range)+'"><span>'+safeText(option.label)+'</span>'+(days===7?'<small>'+option.day+'</small>':'')+'</button>';
+        }).join('');
+        updatePeriodSliceSelection();
+      }
+      function validatePeriodSlice(data,option){
+        if(!data||data.start_date!==option.start||data.end_date!==option.end||!/^\d{4}-\d{2}-\d{2}$/.test(data.today||'')||!Array.isArray(data.subjects))throw new Error('Dönem ayrıntısı yanıtı eksik.');
+        for(const kind of ['question','video','exam'])if(!Number.isSafeInteger(data.totals?.[kind])||data.totals[kind]<0)throw new Error('Dönem toplamı geçersiz.');
+        if(!data.subjects.every(row=>['question','video'].includes(row.kind)&&typeof row.subject==='string'&&Number.isSafeInteger(row.total)&&row.total>=0))throw new Error('Ders ayrıntısı geçersiz.');
+        for(const kind of ['question','video'])if(data.subjects.filter(row=>row.kind===kind).reduce((sum,row)=>sum+row.total,0)!==data.totals[kind])throw new Error('Ders toplamları eksik; yeniden dene.');
+      }
+      function renderPeriodSliceData(){
+        const data=periodSlice.data;if(!data)return;
+        const section=(kind,label)=>{
+          const rows=data.subjects.filter(row=>row.kind===kind&&row.total>0);
+          return '<section class="period-slice-section'+(kind==='video'?' period-slice-section--video':'')+'"><h4><span>'+label+'</span><b>'+data.totals[kind]+'</b></h4>'+(rows.length?'<ul>'+rows.map(row=>'<li><span>'+safeText(row.subject)+'</span><strong>'+row.total+'</strong></li>').join('')+'</ul>':'<p>Kayıt yok.</p>')+'</section>';
+        };
+        const content='<div class="period-slice-columns">'+section('question','Sorular')+section('video','Videolar')+'</div><div class="period-slice-exams"><span>Denemeler</span><strong>'+data.totals.exam+'</strong></div>';
+        const host=qs('periodSliceContent');
+        if(host.innerHTML!==content){
+          const positions=Array.from(host.querySelectorAll('ul'),list=>list.scrollTop);
+          host.innerHTML=content;host.querySelectorAll('ul').forEach((list,i)=>list.scrollTop=positions[i]||0);
+        }
+        host.hidden=false;
+      }
+      async function refreshPeriodSlice(){
+        if(qs('periodPanel').hidden)return;
+        const today=istanbulReportDate();syncPeriodSliceOptions(today);
+        const option=periodSlice.selected;if(!option)return;
+        const request=++periodSlice.request,days=summaries.period.days;
+        const status=qs('periodSliceStatus'),hasData=periodSlice.data!==null;
+        if(!hasData){status.textContent='Yükleniyor…';status.hidden=false;qs('periodSliceContent').hidden=true;}
+        qs('periodSliceRetry').hidden=true;qs('periodSlicePanel').setAttribute('aria-busy','true');
+        try{
+          if(!db)throw new Error('Gerçek kayıtlar için ortak veritabanı bağlantısı gerekiyor.');
+          const {data,error}=await db.rpc('sekolata_summary_slice',{p_start:option.start,p_end:option.end});
+          if(request!==periodSlice.request||qs('periodPanel').hidden||days!==summaries.period.days)return;
+          if(error){
+            if(['PGRST202','42883','42P01','42703'].includes(error.code))throw new Error('Gün/hafta ayrıntısı için supabase-ozet-gun-hafta.sql dosyasının tamamını çalıştır.');
+            throw new Error('Ayrıntılar okunamadı. Bağlantını kontrol edip yeniden dene.');
+          }
+          if(today!==istanbulReportDate()){void refreshPeriodSlice();return;}
+          validatePeriodSlice(data,option);periodSlice.data=data;renderPeriodSliceData();
+          status.textContent=option.start>data.today?'Bu dönem henüz gelmedi.':option.end>data.today?'Bugüne kadarki kayıtlar.':'';
+          status.hidden=!status.textContent;
+        }catch(error){
+          if(request!==periodSlice.request||qs('periodPanel').hidden||days!==summaries.period.days)return;
+          status.textContent=(hasData?'Son alınan veriler gösteriliyor. ':'')+error.message;status.hidden=false;qs('periodSliceRetry').hidden=false;
+        }finally{
+          if(request===periodSlice.request)qs('periodSlicePanel').setAttribute('aria-busy','false');
+        }
+      }
+      function selectPeriodSlice(key){
+        syncPeriodSliceOptions();
+        const option=periodSlice.options.find(row=>row.key===key);if(!option)return;
+        if(periodSlice.selected?.key===key){closePeriodSlice();return;}
+        periodSlice.selected=option;periodSlice.data=null;
+        qs('periodSliceTitle').textContent=option.title;
+        qs('periodSliceRange').textContent=reportDate(option.start)+(option.start===option.end?'':' – '+reportDate(option.end));
+        qs('periodSliceContent').hidden=true;qs('periodSlicePanel').hidden=false;updatePeriodSliceSelection();
+        void refreshPeriodSlice();
+      }
+
       async function refreshSummary(name){
         const state=summaries[name],request=++state.request,days=state.days;
         const hasCurrentData=state.data!==null&&state.dataDays===days;
@@ -1623,6 +1775,7 @@
       function refreshDailyAfterWrite(){
         if(!qs('todayPanel').hidden)void refreshSummary('today');
         if(!qs('periodPanel').hidden)void refreshSummary('period');
+        if(!qs('periodPanel').hidden)void refreshPeriodSlice();
       }
       qs('todayToggle').addEventListener('click',()=>{
         const open=qs('todayPanel').hidden;
@@ -1655,6 +1808,20 @@
       document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDailyAfterWrite();});
       window.addEventListener('focus',refreshDailyAfterWrite);
       setInterval(()=>{if(!document.hidden)refreshDailyAfterWrite();},30000);
+
+      // New detail controls do not change the existing total-card selections.
+      qs('periodSliceTabs').addEventListener('click',event=>{
+        const button=event.target.closest('[data-slice-key]');if(button)selectPeriodSlice(button.dataset.sliceKey);
+      });
+      qs('periodSliceClose').addEventListener('click',()=>{
+        const key=periodSlice.selected?.key;closePeriodSlice();
+        qs('periodSliceTabs').querySelectorAll('[data-slice-key]').forEach(button=>{if(button.dataset.sliceKey===key)button.focus({preventScroll:true});});
+      });
+      qs('periodSliceRetry').addEventListener('click',()=>void refreshPeriodSlice());
+      qs('periodToggle').addEventListener('click',()=>{if(qs('periodPanel').hidden)closePeriodSlice();else syncPeriodSliceOptions();});
+      qs('periodCollapse').addEventListener('click',closePeriodSlice);
+      document.querySelectorAll('[data-days]').forEach(button=>button.addEventListener('click',()=>syncPeriodSliceOptions()));
+      syncPeriodSliceOptions();
 
       render();
       void init();
