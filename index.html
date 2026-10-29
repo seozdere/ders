@@ -530,6 +530,70 @@
       .exam-countdown-time { font-size:9.5px; letter-spacing:-.02em; }
       .exam-countdown-time.is-finished { font-size:8.5px; }
     }
+    .slide-dots {
+      position:relative; display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+      width:min(100%,420px); margin:0 auto 14px; padding:4px; --slide-index:1;
+      border:1px solid #e3e9e2; border-radius:18px;
+      background:rgba(255,254,250,.92); box-shadow:0 4px 16px rgba(77,91,86,.05);
+    }
+    .slide-pill {
+      position:absolute; top:4px; bottom:4px; left:4px; width:calc((100% - 8px) / 3);
+      border-radius:14px; background:#e4f1e8; box-shadow:inset 0 0 0 1px #cfe5d6, 0 2px 8px rgba(88,130,106,.14);
+      transform:translateX(calc(var(--slide-index) * 100%));
+      transition:transform .42s cubic-bezier(.22,.78,.22,1); pointer-events:none;
+    }
+    body.is-swiping .slide-pill { transition:none; }
+    .slide-dot {
+      position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:7px;
+      min-height:42px; padding:0 8px; border:0; border-radius:14px; background:transparent;
+      color:#7d8f87; font:900 13px/1 "Nunito",sans-serif; transition:color .25s;
+    }
+    .slide-dot svg { width:18px; height:18px; flex:0 0 18px; }
+    .slide-dot[aria-current="true"] { color:#3d6a56; }
+    .slide-dot:hover { color:#4f7664; }
+    .slide-dot:focus-visible { outline:3px solid #819ee3; outline-offset:-2px; }
+    @media(max-width:600px) {
+      body { padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
+      .slide-dots {
+        position:fixed; left:50%; bottom:calc(10px + env(safe-area-inset-bottom)); z-index:30;
+        width:min(calc(100% - 26px),420px); margin:0; transform:translateX(-50%);
+        background:rgba(255,254,250,.86); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+        box-shadow:0 10px 30px rgba(44,70,60,.16);
+        transition:transform .3s cubic-bezier(.2,.8,.2,1), opacity .2s;
+      }
+      /* Klavye açıkken çubuk yazma alanını kapatmasın. */
+      body:has(input:focus) .slide-dots { transform:translate(-50%,160%); opacity:0; pointer-events:none; }
+    }
+
+
+    /* Seçilen görsel stiller; kayıt ve hesaplama akışından bağımsız. */
+    .slide-dot, .slide-dot[aria-current="true"] { width:auto; height:auto; background:transparent; border-radius:14px; }
+    .slide-dot:hover { transform:none; }
+    .slide { opacity:.45; transform:scale(.97); transition:opacity .35s ease, transform .45s cubic-bezier(.2,.8,.2,1); }
+    .slide:not([aria-hidden="true"]), body.is-swiping .slide { opacity:1; transform:none; }
+    .exam-countdown-label { font-size:12px; }
+    .exam-countdown-time { padding:2px 0; border:0; background:transparent; font-size:11px; cursor:pointer; }
+    .exam-countdown-time b { font-size:15px; font-weight:900; letter-spacing:-.02em; margin-right:1px; }
+    .exam-countdown-time:focus-visible { outline:2px solid #91b8a6; outline-offset:2px; border-radius:4px; }
+    #questionList .detail-row.question-row { display:block; padding:10px; }
+    #questionList .question-row-top { display:flex; align-items:center; gap:8px; }
+    #questionList .question-row-top .detail-name { flex:1; min-width:0; }
+    #questionList .question-row-top .detail-edit { width:32px; height:32px; flex:0 0 32px; border-radius:9px; }
+    #questionList .question-quick-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) 40px 40px; gap:6px; margin-top:8px; width:100%; max-width:100%; }
+    #questionList .question-quick-actions .detail-mini { width:100%; height:40px; }
+    #questionList .question-add-count { height:40px; padding:4px; border-radius:10px; font-size:13px; }
+    [data-visual-count] { position:relative; color:transparent!important; }
+    [data-visual-count]::after { content:attr(data-visual-count) / ''; position:absolute; inset:0; color:var(--visual-count-color); white-space:pre; pointer-events:none; text-align:inherit; font:inherit; letter-spacing:inherit; }
+    @media(max-width:600px){
+      #questionList .question-quick-actions { grid-template-columns:repeat(3,minmax(0,1fr)) 38px 38px; gap:5px; }
+      #questionList .question-add-count, #questionList .question-quick-actions .detail-mini { height:38px; }
+    }
+    @media(max-width:420px){
+      .exam-countdown-label { font-size:11px; }
+      .exam-countdown-time { font-size:10px; letter-spacing:0; }
+      .exam-countdown-time b { font-size:13.5px; }
+    }
+    @media(prefers-reduced-motion:reduce){.slide,.slide-pill,.slide-dots { transition:none!important; }}
   </style>
   <!-- Seko Kontrol: Chrome/Android kurulum ve tarayıcı sekmesi simgeleri -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -557,11 +621,11 @@
       <section class="exam-countdown" aria-label="2027 AGS ve ÖABT sınavlarına kalan süre">
         <div class="exam-countdown-row" title="MEB-AGS: 8 Mayıs 2027">
           <span class="exam-countdown-label"><span class="exam-countdown-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C9.5 5 6.3 4.6 3.5 5.4V19c2.8-.8 6-.4 8.5 1.1 2.5-1.5 5.7-1.9 8.5-1.1V5.4c-2.8-.8-6-.4-8.5 1.1Z"/><path d="M12 6.5v13.6"/></svg></span>AGS</span>
-          <span class="exam-countdown-time" id="agsCountdown" data-exam-date="2027-05-08">—</span>
+          <button type="button" class="exam-countdown-time" id="agsCountdown" data-exam-date="2027-05-08">—</button>
         </div>
         <div class="exam-countdown-row exam-countdown-row--oabt" title="ÖABT: 9 Mayıs 2027">
           <span class="exam-countdown-label"><span class="exam-countdown-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5-9.5-5Z"/><path d="M6.5 11.6v5.3c3.7 2.6 7.3 2.6 11 0v-5.3M21.5 9.5v6"/></svg></span>ÖABT</span>
-          <span class="exam-countdown-time" id="oabtCountdown" data-exam-date="2027-05-09">—</span>
+          <button type="button" class="exam-countdown-time" id="oabtCountdown" data-exam-date="2027-05-09">—</button>
         </div>
       </section>
       <a class="drive-link" href="https://drive.google.com/drive/folders/1buPoC1e1V2uBerYYgkYPYIeqMewyZyQL" target="_blank" rel="noopener noreferrer" aria-label="Google Drive klasörünü aç (yeni sekme)" title="Google Drive klasörünü aç">
@@ -638,6 +702,12 @@
       </div>
     </section>
 
+    <nav class="slide-dots" aria-label="Panel seçimi">
+      <span class="slide-pill" aria-hidden="true"></span>
+      <button type="button" class="slide-dot" data-slide-to="0" aria-label="Soru çözme sayfası" aria-current="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m9 12 2.2 2.2L15.5 10"/></svg><span>Soru</span></button>
+      <button type="button" class="slide-dot" data-slide-to="1" aria-label="Video sayfası" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="4"/><path d="M10.5 9.5v5l4-2.5z"/></svg><span>Video</span></button>
+      <button type="button" class="slide-dot" data-slide-to="2" aria-label="Deneme sayfası" aria-current="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 11h6M9 15h4"/></svg><span>Deneme</span></button>
+    </nav>
     <div class="slide-viewport" id="slideViewport" aria-label="Çalışma panoları">
       <div class="slide-track" id="slideTrack" style="transform:translateX(-100%)">
         <div class="slide" data-slide="question" aria-hidden="true" inert>    <section class="dashboard" aria-label="Soru çözme takip paneli">
@@ -685,11 +755,6 @@
     </section></div>
       </div>
     </div>
-    <nav class="slide-dots" aria-label="Panel seçimi">
-      <button type="button" class="slide-dot" data-slide-to="0" aria-label="Soru çözme sayfası" aria-current="false"></button>
-      <button type="button" class="slide-dot" data-slide-to="1" aria-label="Video sayfası" aria-current="true"></button>
-      <button type="button" class="slide-dot" data-slide-to="2" aria-label="Deneme sayfası" aria-current="false"></button>
-    </nav>
     <span class="slide-sr" id="slideAnnouncer" aria-live="polite"></span>
   </main>
 
@@ -777,15 +842,28 @@
         const days = dayNumber(target) - dayNumber(addCalendarMonths(today, months));
         return months ? `${months} ay ${days} gün` : `${days} gün`;
       }
+      const examDisplayModes = new Map();
       function updateExamCountdowns() {
         const today = todayInTurkey();
         for (const exam of targets) {
           const element = document.getElementById(exam.id);
           if (!element) continue;
-          element.textContent = remainingTime(today, exam);
+          const daysMode=examDisplayModes.get(exam.id)==='days';
+          const diff=dayNumber(exam)-dayNumber(today);
+          const text=daysMode&&diff>0 ? diff+' gün' : remainingTime(today, exam);
+          if(element.dataset.displayText!==text){
+            element.innerHTML=text.replace(/(\d+)/g,'<b>$1</b>');
+            element.dataset.displayText=text;
+          }
+          element.setAttribute('aria-label',(exam.id==='agsCountdown'?'AGS: ':'ÖABT: ')+text+'. '+(daysMode?'Ay ve gün olarak göster':'Toplam gün olarak göster'));
+          element.title=daysMode?'Ay ve gün olarak göster':'Toplam gün olarak göster';
           element.classList.toggle('is-finished', dayNumber(today) > dayNumber(exam));
         }
       }
+      targets.forEach(exam=>document.getElementById(exam.id)?.addEventListener('click',()=>{
+        examDisplayModes.set(exam.id,examDisplayModes.get(exam.id)==='days'?'months':'days');
+        updateExamCountdowns();
+      }));
       updateExamCountdowns();
       // Gece yarısı ve uzun süre açık kalan sekmeler için; kısa hesap, ağ isteği yok.
       setInterval(updateExamCountdowns, 60000);
@@ -1140,6 +1218,7 @@
         activeSlide=next;
         document.body.classList.remove('is-swiping');
         setTrackPosition(activeSlide);
+        document.querySelector('.slide-dots').style.setProperty('--slide-index',String(activeSlide));
         syncSlideHeight();
         document.querySelectorAll('[data-slide-to]').forEach(dot=>dot.setAttribute('aria-current',String(Number(dot.dataset.slideTo)===activeSlide)));
         slidePanels.forEach((el,index)=>{
@@ -1180,6 +1259,7 @@
         // İlk ve son kartın ötesindeki hareket hafifçe dirençle sınırlandırılır.
         const adjusted=(drag.index===0&&dx>0)||(drag.index===2&&dx<0) ? dx*.22:dx;
         slideTrack.style.transform=`translate3d(${-drag.index*drag.width+adjusted}px,0,0)`;
+        document.querySelector('.slide-dots').style.setProperty('--slide-index',Math.max(0,Math.min(2,drag.index-adjusted/Math.max(1,drag.width))).toFixed(3));
         const direction=adjusted>0?-1:1;
         const neighbor=slidePanels[drag.index+direction];
         const current=slidePanels[drag.index];
@@ -1302,10 +1382,10 @@
           const expanded=expandedQuestions.has(s.id);
           // Hedef soru sayısı yok: çubuk, toplam çözülen sorulardaki payı gösterir; tamamlanma yüzdesi değildir.
           const share=grandSolved?Math.round(100*solved/grandSolved):0;
-          const topicHtml=topics.map(t=>`<div class="detail-row"><span class="detail-name">${safeText(t.title)}<small class="question-count-note">${num(t.correct)} doğru · ${num(t.wrong)} yanlış</small></span>
+          const topicHtml=topics.map(t=>`<div class="detail-row question-row"><div class="question-row-top"><span class="detail-name">${safeText(t.title)}<small class="question-count-note">${num(t.correct)} doğru · ${num(t.wrong)} yanlış</small></span>
              <span class="detail-values" aria-label="${safeText(t.title)}: ${t.solved} soru çözüldü">${t.solved}</span>
-             <div class="question-quick-actions">
                <button class="detail-edit" type="button" data-qedit-topic="${safeText(t.id)}" aria-label="${safeText(t.title)} konusunu düzenle" title="Konuyu düzenle" ${questionPending.has(t.id)?'disabled':''}>✎</button>
+             </div><div class="question-quick-actions">
                <input class="question-add-count" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="total" value="${safeText(questionAddDrafts.get(t.id)?.total||'')}" placeholder="Top." aria-label="${safeText(t.title)} toplam soru adedi" title="Toplam soru (üç kutu boşsa +1)" ${questionPending.has(t.id)?'disabled':''}>
                <input class="question-add-count question-add-count--correct" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="correct" value="${safeText(questionAddDrafts.get(t.id)?.correct||'')}" placeholder="D" aria-label="${safeText(t.title)} eklenecek doğru sayısı" title="Doğru (boşsa 0)" ${questionPending.has(t.id)?'disabled':''}>
                <input class="question-add-count question-add-count--wrong" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" data-qamount="${safeText(t.id)}" data-qfield="wrong" value="${safeText(questionAddDrafts.get(t.id)?.wrong||'')}" placeholder="Y" aria-label="${safeText(t.title)} eklenecek yanlış sayısı" title="Yanlış (boşsa 0)" ${questionPending.has(t.id)?'disabled':''}>
@@ -1828,6 +1908,72 @@
       void init();
     })();
 
+  </script>
+  <!-- Yalnızca görsel sayı animasyonları. -->
+  <script>
+
+    (() => {
+      'use strict';
+      // Görsel sayaç: gerçek metin ve veri modeli değiştirilmez.
+      const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+      const selector='#overallPercent,#questionPercent,#examTotal,.subject-count strong,.detail-values,.today-stat strong,.summary-details li strong,.period-slice-section h4 b,.period-slice-section li strong,.period-slice-exams strong,.exam-countdown-time b';
+      const memory=new Map(),running=new Map();
+      function countingFrame(text,from,progress){
+        const old=String(from||'').match(/-?\d+(?:\.\d+)?/g)||[];
+        let i=0;
+        const ease=1-Math.pow(1-progress,3);
+        return text.replace(/-?\d+(?:\.\d+)?/g,token=>{
+          const start=Number(old[i++]||0),end=Number(token),precision=(token.split('.')[1]||'').length;
+          return (start+(end-start)*ease).toFixed(precision);
+        });
+      }
+      function stop(el){
+        const frame=running.get(el);if(frame!==undefined)cancelAnimationFrame(frame);
+        running.delete(el);el.removeAttribute('data-visual-count');
+      }
+      function animate(el,text,from){
+        stop(el);
+        if(reduced.matches||text===from||!/-?\d/.test(text))return;
+        el.style.setProperty('--visual-count-color',getComputedStyle(el).color);
+        el.setAttribute('data-visual-count',countingFrame(text,from,0));
+        const start=performance.now();
+        const tick=now=>{
+          if(!el.isConnected||el.textContent!==text||reduced.matches){stop(el);return;}
+          const p=Math.min(1,(now-start)/600);
+          if(p===1){stop(el);return;}
+          el.setAttribute('data-visual-count',countingFrame(text,from,p));
+          running.set(el,requestAnimationFrame(tick));
+        };
+        running.set(el,requestAnimationFrame(tick));
+      }
+      function visible(el){return !el.closest('[hidden],[inert],[aria-hidden="true"]')&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=='hidden';}
+      function scan(){
+        queued=false;
+        const seen=new Set();
+        selector.split(',').forEach(group=>document.querySelectorAll(group).forEach((el,index)=>{
+          const scope=el.closest('.exam-countdown-time');
+          const key=el.id||(scope?scope.id+':'+Array.from(scope.querySelectorAll('b')).indexOf(el):group+':'+index),text=el.textContent,shown=visible(el),old=memory.get(key);
+          seen.add(key);
+          if(shown&&(!old?.shown||old.text!==text))animate(el,text,!scope&&old?.shown?old.text:'');
+          if(!shown)stop(el);
+          memory.set(key,{text,shown});
+        }));
+        for(const [key,value] of memory)if(!seen.has(key))value.shown=false;
+        for(const el of running.keys())if(!el.isConnected)stop(el);
+      }
+      let queued=false;
+      function schedule(){if(!queued){queued=true;requestAnimationFrame(scan);}}
+      const observer=new MutationObserver(schedule);
+      observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','aria-hidden','aria-expanded']});
+      document.addEventListener('click',event=>{
+        if(event.target.closest('[data-days]'))document.querySelectorAll('#periodPanel '+selector.split(',').join(',#periodPanel ')).forEach(el=>{if(el.id)memory.delete(el.id);});
+        schedule();
+      });
+      reduced.addEventListener('change',()=>{for(const el of running.keys())stop(el);schedule();});
+      document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const el of running.keys())stop(el);}else schedule();});
+      window.addEventListener('resize',schedule);
+      schedule();
+    })();
   </script>
   <!-- PWA kayıt işlemi: mevcut panoların ve Supabase işlemlerinin dışındadır. -->
   <script>
